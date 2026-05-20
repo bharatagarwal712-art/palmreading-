@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 941 1672" role="img" aria-labelledby="title desc">
+  <title id="title">Warm AI palm scan hero</title>
+  <desc id="desc">A cinematic dark mobile hero illustration with a glowing palm scan.</desc>
+  <defs>
+    <radialGradient id="violet" cx="66%" cy="50%" r="66%">
+      <stop offset="0%" stop-color="#3a1f52" stop-opacity=".82"/>
+      <stop offset="52%" stop-color="#111116" stop-opacity=".78"/>
+      <stop offset="100%" stop-color="#050507"/>
+    </radialGradient>
+    <radialGradient id="cyan" cx="63%" cy="62%" r="34%">
+      <stop offset="0%" stop-color="#80edf3" stop-opacity=".34"/>
+      <stop offset="58%" stop-color="#80edf3" stop-opacity=".06"/>
+      <stop offset="100%" stop-color="#80edf3" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="skin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d9a77c"/>
+      <stop offset="48%" stop-color="#a76f52"/>
+      <stop offset="100%" stop-color="#5f362e"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f2d492" stop-opacity=".92"/>
+      <stop offset="100%" stop-color="#a78246" stop-opacity=".42"/>
+    </linearGradient>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="941" height="1672" fill="url(#violet)"/>
+  <rect width="941" height="1672" fill="url(#cyan)"/>
+  <circle cx="646" cy="1048" r="360" fill="#80edf3" opacity=".08" filter="url(#softGlow)"/>
+  <ellipse cx="610" cy="1180" rx="260" ry="430" fill="url(#skin)" opacity=".94" transform="rotate(-15 610 1180)"/>
+  <path d="M460 1110c78-48 174-50 264-8" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round" opacity=".82"/>
+  <path d="M472 1200c98-68 190-68 300-2" fill="none" stroke="url(#gold)" stroke-width="6" stroke-linecap="round" opacity=".64"/>
+  <path d="M558 885c-28 154-20 326 54 518" fill="none" stroke="url(#gold)" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+  <path d="M680 930c-74 102-104 244-80 424" fill="none" stroke="url(#gold)" stroke-width="5" stroke-linecap="round" opacity=".48"/>
+  <path d="M455 1345c118-38 228-36 342 6" fill="none" stroke="#80edf3" stroke-width="3" stroke-linecap="round" opacity=".44"/>
+  <rect x="542" y="1278" width="282" height="500" rx="42" fill="#050507" opacity=".72" transform="rotate(-15 683 1528)"/>
+  <rect x="568" y="1306" width="230" height="438" rx="32" fill="#101217" opacity=".96" transform="rotate(-15 683 1525)"/>
+  <path d="M356 300c100-54 204-58 312-12" fill="none" stroke="#80edf3" stroke-width="2" opacity=".18"/>
+  <path d="M232 404c86-74 204-118 356-132" fill="none" stroke="#c5a46b" stroke-width="2" opacity=".12"/>
+  <g fill="#80edf3" opacity=".44">
+    <circle cx="204" cy="364" r="3"/>
+    <circle cx="292" cy="492" r="2"/>
+    <circle cx="714" cy="452" r="2"/>
+    <circle cx="806" cy="724" r="3"/>
+    <circle cx="178" cy="878" r="2"/>
+  </g>
+  <rect width="941" height="1672" fill="url(#violet)" opacity=".18"/>
+  <rect width="941" height="1672" fill="#050507" opacity=".18"/>
+</svg>
