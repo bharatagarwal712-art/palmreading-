@@ -1,10 +1,10 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { LandingPage } from "@/components/sections/landing-page";
+import { PremiumLandingPage } from "@/components/sections/premium-landing-page";
 
 export default function HomePage() {
   return (
     <AppShell hideMobileNav>
-      <LandingPage />
+      <PremiumLandingPage />
     </AppShell>
   );
 }
