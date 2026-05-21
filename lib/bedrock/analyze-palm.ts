@@ -16,86 +16,144 @@ export async function analyzePalmWithNova(imageUrl: string) {
 
 Your role is NOT to make supernatural predictions.
 
-Your role is to interpret palm structures, line formations, mounts, finger proportions, and symbolic palmistry patterns into deep personality insights, emotional tendencies, behavioral patterns, relationship dynamics, thinking styles, energy signatures, life transitions, and psychological themes.
+Deeply analyze the uploaded palm image and identify ALL meaningful visible palmistry features.
+
+Analyze:
+
+MAJOR LINES
+- Heart Line
+- Head Line
+- Life Line
+- Fate Line
+- Sun Line
+- Mercury Line
+- Intuition Line
+- Girdle of Venus
+
+MINOR LINES
+- Marriage Lines
+- Children Lines
+- Travel Lines
+- Influence Lines
+- Bracelet Lines
+
+MOUNTS
+- Mount of Venus
+- Mount of Moon
+- Mount of Jupiter
+- Mount of Saturn
+- Mount of Apollo
+- Mount of Mercury
+- Upper Mars
+- Lower Mars
+- Plain of Mars
+
+SPECIAL MARKINGS
+- Crosses
+- Stars
+- Triangles
+- Squares
+- Islands
+- Breaks
+- Forks
+- Chains
+- Dots
+- Fish Signs
+- Grilles
+
+HAND STRUCTURE
+- Finger proportions
+- Finger spacing
+- Thumb structure
+- Palm shape
+- Finger curvature
 
 The reading should feel:
 - cinematic
-- emotionally resonant
-- reflective
-- premium
-- deeply personalized
+- emotionally intelligent
 - psychologically believable
+- premium
+- introspective
+- deeply personalized
 
 Avoid:
-- vague horoscope language
 - childish mysticism
 - exaggerated prophecy
-- certainty about future events
 - dangerous predictions
-- health/legal/death predictions
-
-Analyze:
-1. Heart Line
-2. Head Line
-3. Life Line
-4. Fate Line
-5. Sun Line
-6. Relationship tendencies
-7. Career orientation
-8. Emotional patterns
-9. Thinking style
-10. Stress patterns
-11. Inner conflicts
-12. Hidden strengths
-13. Current life phase energy
+- certainty about future events
+- medical/legal/death claims
 
 Return STRICT JSON ONLY.
 
-Required JSON format:
+Required JSON structure:
 {
   "title": "string",
   "summary": "string",
+  "detected_features": [
+    "Strong Heart Line",
+    "Forked Life Line"
+  ],
+  "annotated_image_prompt": "detailed luxury annotation prompt",
   "palm_overlay": {
-    "style": "grayscale luxury palm annotation",
-    "lines": [
+    "style": "luxury grayscale AI palm analysis",
+    "annotations": [
       {
         "name": "Heart Line",
+        "category": "major_line",
+        "importance": "high",
         "color": "#7dd3fc",
         "label": "Heart Line",
-        "path": "SVG_PATH"
+        "path": "SVG_PATH",
+        "meaning": "string"
       }
     ]
   },
   "sections": [
     {
       "title": "Emotional Profile",
-      "content": "long detailed paragraph"
+      "content": "long immersive paragraph"
     },
     {
       "title": "Relationship Patterns",
-      "content": "long detailed paragraph"
+      "content": "long immersive paragraph"
     },
     {
       "title": "Career & Ambition",
-      "content": "long detailed paragraph"
+      "content": "long immersive paragraph"
     },
     {
       "title": "Current Life Energy",
-      "content": "long detailed paragraph"
+      "content": "long immersive paragraph"
     },
     {
       "title": "Inner Challenges",
-      "content": "long detailed paragraph"
+      "content": "long immersive paragraph"
     },
     {
       "title": "Hidden Strengths",
-      "content": "long detailed paragraph"
+      "content": "long immersive paragraph"
     }
   ]
 }
 
-Generate believable SVG paths matching the visible palm lines.
-The response must feel premium, elegant, insightful, and highly personalized.
+Generate annotations ONLY for meaningful visible features.
+Do not clutter the palm.
+
+The annotated image should:
+- use the uploaded palm image as the base
+- convert palm to grayscale
+- highlight detected lines and markings with elegant glowing colors
+- add subtle premium labels
+- look cinematic and futuristic
+- feel like an elite AI psychological palm analysis
+- avoid looking medical or technical
+
+Color logic:
+- emotional lines → cyan
+- intellectual lines → violet
+- vitality lines → gold
+- destiny/career lines → emerald
+- special markings → amber or soft red
 
 Palm image URL:
 ${imageUrl}`;
@@ -113,7 +171,7 @@ ${imageUrl}`;
       },
     ],
     inferenceConfig: {
-      maxTokens: 2200,
+      maxTokens: 2600,
       temperature: 0.9,
       topP: 0.9,
     },
@@ -136,27 +194,48 @@ ${imageUrl}`;
       title: "Psychological Palm Reflection",
       summary:
         "Your palm reflects emotional depth, reflective intelligence, and strong internal resilience during periods of transition.",
+      detected_features: [
+        "Strong Heart Line",
+        "Deep Head Line",
+        "Forked Life Line",
+        "Visible Fate Line",
+        "Prominent Mount of Venus"
+      ],
+      annotated_image_prompt:
+        "Luxury grayscale palm analysis with glowing labeled palmistry markers and elegant cinematic overlays.",
       palm_overlay: {
-        style: "grayscale luxury palm annotation",
-        lines: [
+        style: "luxury grayscale AI palm analysis",
+        annotations: [
           {
             name: "Heart Line",
+            category: "major_line",
+            importance: "high",
             color: "#7dd3fc",
             label: "Heart Line",
             path: "M180 455 C300 375 470 345 640 355",
+            meaning:
+              "Emotionally observant and selective in emotional trust.",
           },
           {
             name: "Head Line",
+            category: "major_line",
+            importance: "high",
             color: "#c4b5fd",
             label: "Head Line",
             path: "M190 625 C360 585 520 575 660 575",
+            meaning:
+              "Strong internal analysis and reflective thinking patterns.",
           },
           {
             name: "Life Line",
+            category: "major_line",
+            importance: "high",
             color: "#fcd34d",
             label: "Life Line",
             path: "M445 250 C300 430 265 760 560 1160",
-          },
+            meaning:
+              "Resilience during emotionally transformative phases.",
+          }
         ],
       },
       sections: [
@@ -169,8 +248,8 @@ ${imageUrl}`;
           title: "Relationship Patterns",
           content:
             "You seek emotionally intelligent relationships where stability and understanding matter more than surface excitement. Your palm reflects selective attachment and strong emotional memory.",
-        },
-      ],
+        }
+      ]
     };
   }
 }
