@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Brain, Heart, Sparkles, Stars } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPalmUpload } from "@/lib/palm-upload-session";
 import { useEffect, useState } from "react";
+import { AnimatedPalmViewer } from "@/components/palm/animated-palm-viewer";
 
 const insights = [
   {
@@ -63,42 +63,8 @@ export default function ResultsPage() {
           </div>
         </motion.div>
 
-        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-4 shadow-glow backdrop-blur-xl"
-          >
-            <div className="relative aspect-[0.78] overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-black/30">
-              {preview ? (
-                <Image
-                  src={preview}
-                  alt="Palm preview"
-                  fill
-                  className="object-cover opacity-85"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                  Palm preview unavailable
-                </div>
-              )}
-
-              <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/20" />
-
-              <motion.div
-                className="absolute inset-x-6 h-px bg-gradient-to-r from-transparent via-cyan-200 to-transparent"
-                animate={{
-                  y: [-40, 420, -40],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                }}
-              />
-            </div>
-          </motion.div>
+        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <AnimatedPalmViewer imageUrl={preview} />
 
           <div className="space-y-5">
             {insights.map((item, index) => {
