@@ -32,7 +32,7 @@ export default function ProcessingPage() {
           clearInterval(interval);
 
           setTimeout(() => {
-            window.location.href = "/auth";
+            window.location.href = "/results";
           }, 1600);
 
           return current;
