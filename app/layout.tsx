@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { cn } from "@/lib/utils";
+import { OpenCvLoader } from "@/components/palm/opencv-loader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.variable, playfair.variable)}>
+        <OpenCvLoader />
         <Providers>{children}</Providers>
       </body>
     </html>
