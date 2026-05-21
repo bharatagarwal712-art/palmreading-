@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" role="img" aria-labelledby="title desc">
+  <title id="title">AI palm scan lifestyle hero</title>
+  <desc id="desc">A premium dark mobile hero illustration of a palm glowing near a phone scan.</desc>
+  <defs>
+    <radialGradient id="bg-a" cx="62%" cy="45%" r="70%"><stop offset="0%" stop-color="#302047"/><stop offset="44%" stop-color="#111116"/><stop offset="100%" stop-color="#050507"/></radialGradient>
+    <radialGradient id="cyan-glow" cx="66%" cy="58%" r="42%"><stop offset="0%" stop-color="#80edf3" stop-opacity=".42"/><stop offset="58%" stop-color="#80edf3" stop-opacity=".08"/><stop offset="100%" stop-color="#80edf3" stop-opacity="0"/></radialGradient>
+    <linearGradient id="skin" x1="30%" y1="15%" x2="80%" y2="100%"><stop offset="0%" stop-color="#e3b08a"/><stop offset="45%" stop-color="#ad7557"/><stop offset="100%" stop-color="#4b2924"/></linearGradient>
+    <linearGradient id="gold-line" x1="20%" y1="20%" x2="90%" y2="80%"><stop offset="0%" stop-color="#f0d08a"/><stop offset="100%" stop-color="#a58148" stop-opacity=".5"/></linearGradient>
+    <filter id="blur-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="24" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bg-a)"/><rect width="1080" height="1920" fill="url(#cyan-glow)"/>
+  <circle cx="720" cy="990" r="390" fill="#80edf3" opacity=".08" filter="url(#blur-glow)"/>
+  <path d="M682 685c118 70 184 205 176 366-7 147-77 339-183 503-60 93-207 74-244-30-83-231-104-451-60-641 39-166 172-257 311-198Z" fill="url(#skin)" opacity=".96"/>
+  <path d="M506 905c94-58 214-59 315-7" fill="none" stroke="url(#gold-line)" stroke-width="8" stroke-linecap="round" opacity=".78"/>
+  <path d="M491 1023c131-86 253-86 385-5" fill="none" stroke="url(#gold-line)" stroke-width="7" stroke-linecap="round" opacity=".62"/>
+  <path d="M619 758c-39 219-24 433 59 676" fill="none" stroke="url(#gold-line)" stroke-width="7" stroke-linecap="round" opacity=".66"/>
+  <path d="M752 806c-74 123-112 275-96 505" fill="none" stroke="#80edf3" stroke-width="5" stroke-linecap="round" opacity=".46"/>
+  <path d="M480 1183c108-40 246-38 392 7" fill="none" stroke="#80edf3" stroke-width="4" stroke-linecap="round" opacity=".42"/>
+  <rect x="666" y="1186" width="302" height="560" rx="52" fill="#050507" opacity=".8" transform="rotate(-13 817 1466)"/>
+  <rect x="695" y="1220" width="244" height="490" rx="38" fill="#101217" transform="rotate(-13 817 1465)"/>
+  <path d="M737 1320h138" stroke="#80edf3" stroke-width="8" stroke-linecap="round" opacity=".46" transform="rotate(-13 806 1320)"/>
+  <path d="M736 1366h95" stroke="#c5a46b" stroke-width="7" stroke-linecap="round" opacity=".42" transform="rotate(-13 784 1366)"/>
+  <g fill="#80edf3" opacity=".42"><circle cx="185" cy="396" r="4"/><circle cx="285" cy="558" r="2.5"/><circle cx="850" cy="485" r="3"/><circle cx="930" cy="812" r="4"/><circle cx="238" cy="1110" r="2.5"/></g>
+  <path d="M0 0h1080v1920H0z" fill="url(#bg-a)" opacity=".12"/>
+</svg>
