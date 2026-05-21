@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
-import { Upload } from "lucide-react";
+import { useRef, useState } from "react";
+import { Loader2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { savePalmUpload } from "@/lib/palm-upload-session";
 
 interface UploadPalmButtonProps {
   className?: string;
@@ -18,6 +19,7 @@ export function UploadPalmButton({
   fullWidth = false,
 }: UploadPalmButtonProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleUploadClick = () => {
     inputRef.current?.click();
@@ -30,9 +32,17 @@ export function UploadPalmButton({
 
     if (!file) return;
 
-    console.log("Palm uploaded:", file.name);
+    try {
+      setUploading(true);
 
-    window.location.href = "/processing";
+      await savePalmUpload(file);
+
+      window.location.href = "/processing";
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -51,9 +61,14 @@ export function UploadPalmButton({
         variant={variant}
         className={`${fullWidth ? "w-full" : ""} ${className ?? ""}`}
         onClick={handleUploadClick}
+        disabled={uploading}
       >
-        <Upload className="size-4" aria-hidden />
-        Upload palm
+        {uploading ? (
+          <Loader2 className="size-4 animate-spin" aria-hidden />
+        ) : (
+          <Upload className="size-4" aria-hidden />
+        )}
+        {uploading ? "Preparing scan..." : "Upload palm"}
       </Button>
     </>
   );
