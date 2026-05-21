@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UploadPalmButton } from "@/components/ui/upload-palm-button";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const steps = [["Upload your palm", "Take one clear photo and let the scan prepare your reading.", Upload], ["AI reads the lines", "Life, heart, head, and fate lines become structured insight.", ScanLine], ["Receive a report", "A beautiful report turns patterns into calm self-reflection.", Sparkles]] as const;
@@ -29,7 +30,7 @@ function Hero() {
           <Reveal><Badge>AI palm reading</Badge></Reveal>
           <Reveal><h1 className="mt-6 max-w-[9ch] font-display text-6xl leading-[0.9] text-balance sm:text-7xl md:text-8xl lg:text-9xl"><span className="block">Your palm holds patterns.</span><span className="block">AI reveals them.</span></h1></Reveal>
           <Reveal><p className="mt-6 max-w-md text-base leading-7 text-muted-foreground sm:text-lg">Upload a palm photo and step into a cinematic reading experience built for clarity, emotion, and modern self-discovery.</p></Reveal>
-          <Reveal><div className="mt-8 flex flex-col gap-3 sm:flex-row"><Button asChild size="lg"><Link href="/onboarding"><Upload className="size-4" aria-hidden />Upload palm</Link></Button><Button asChild size="lg" variant="secondary"><Link href="#sample-reports">View sample report<ArrowRight className="size-4" aria-hidden /></Link></Button></div></Reveal>
+          <Reveal><div className="mt-8 flex flex-col gap-3 sm:flex-row"><UploadPalmButton /><Button asChild size="lg" variant="secondary"><Link href="#sample-reports">View sample report<ArrowRight className="size-4" aria-hidden /></Link></Button></div></Reveal>
           <Reveal><div className="mt-8 flex items-center gap-3 text-xs text-muted-foreground"><ShieldCheck className="size-4 text-accent" aria-hidden /><span>Private by design. Ready for secure upload and premium reports.</span></div></Reveal>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 28, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.9, ease }} className="relative mx-auto hidden aspect-[0.72] w-full max-w-[380px] md:block">
@@ -61,7 +62,7 @@ function Testimonials() {
 }
 
 function FinalCta() {
-  return <section className="container pb-28 pt-16 md:pb-24 md:pt-24"><motion.div initial={{ opacity: 0, scale: 0.96 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, ease }} className="relative overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.035] px-5 py-12 text-center shadow-glow md:px-12 md:py-16"><div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(197,164,107,0.18),transparent_28rem)]" /><div className="relative mx-auto max-w-2xl"><Heart className="mx-auto mb-5 size-8 text-primary" aria-hidden /><h2 className="font-display text-5xl leading-none text-balance md:text-7xl">Begin with your hand. Leave with a mirror.</h2><p className="mx-auto mt-5 max-w-md text-base leading-7 text-muted-foreground">The first scan should feel effortless, beautiful, and worth completing.</p><Button asChild size="lg" className="mt-8"><Link href="/onboarding"><Upload className="size-4" aria-hidden />Upload palm</Link></Button></div></motion.div></section>;
+  return <section className="container pb-28 pt-16 md:pb-24 md:pt-24"><motion.div initial={{ opacity: 0, scale: 0.96 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7, ease }} className="relative overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.035] px-5 py-12 text-center shadow-glow md:px-12 md:py-16"><div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(197,164,107,0.18),transparent_28rem)]" /><div className="relative mx-auto max-w-2xl"><Heart className="mx-auto mb-5 size-8 text-primary" aria-hidden /><h2 className="font-display text-5xl leading-none text-balance md:text-7xl">Begin with your hand. Leave with a mirror.</h2><p className="mx-auto mt-5 max-w-md text-base leading-7 text-muted-foreground">The first scan should feel effortless, beautiful, and worth completing.</p><UploadPalmButton className="mt-8" /></div></motion.div></section>;
 }
 
 function Section({ id, eyebrow, title, children }: { id?: string; eyebrow: string; title: string; children: React.ReactNode }) {
@@ -89,5 +90,5 @@ function Particles() {
 }
 
 function StickyCta() {
-  return <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-background/82 p-4 backdrop-blur-xl md:hidden"><Button asChild size="lg" className="w-full"><Link href="/onboarding"><Upload className="size-4" aria-hidden />Upload palm</Link></Button></div>;
+  return <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-background/82 p-4 backdrop-blur-xl md:hidden"><UploadPalmButton fullWidth /></div>;
 }
