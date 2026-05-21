@@ -21,31 +21,26 @@ const regions: PalmRegion[] = [
     id: "heart-line",
     label: "Heart Line",
     color: "#7dd3fc",
-    insight:
-      "Emotionally protective and deeply observant before trusting others.",
-    path: "M55 130 C120 90 190 105 255 95",
+    insight: "Emotionally protective and deeply observant before trusting others.",
+    path: "M180 455 C300 375 470 345 640 355",
   },
   {
     id: "head-line",
     label: "Head Line",
     color: "#c4b5fd",
-    insight:
-      "Strong reflective thinking patterns combined with intuition-driven decisions.",
-    path: "M60 185 C130 170 205 165 275 175",
+    insight: "Strong reflective thinking patterns combined with intuition-driven decisions.",
+    path: "M190 625 C360 585 520 575 660 575",
   },
   {
     id: "life-line",
     label: "Life Line",
     color: "#fcd34d",
-    insight:
-      "Independent energy with resilience during emotionally transformative phases.",
-    path: "M115 80 C55 170 85 270 160 360",
+    insight: "Independent energy with resilience during emotionally transformative phases.",
+    path: "M445 250 C300 430 265 760 560 1160",
   },
 ];
 
-export function AnimatedPalmViewer({
-  imageUrl,
-}: AnimatedPalmViewerProps) {
+export function AnimatedPalmViewer({ imageUrl }: AnimatedPalmViewerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -56,10 +51,7 @@ export function AnimatedPalmViewer({
     return () => clearInterval(interval);
   }, []);
 
-  const activeRegion = useMemo(
-    () => regions[activeIndex],
-    [activeIndex],
-  );
+  const activeRegion = useMemo(() => regions[activeIndex], [activeIndex]);
 
   return (
     <div className="space-y-5">
@@ -70,7 +62,7 @@ export function AnimatedPalmViewer({
               src={imageUrl}
               alt="Palm preview"
               fill
-              className="object-cover opacity-85"
+              className="object-contain opacity-90"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
@@ -81,7 +73,8 @@ export function AnimatedPalmViewer({
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-background/20" />
 
           <svg
-            viewBox="0 0 320 420"
+            viewBox="0 0 1000 1400"
+            preserveAspectRatio="xMidYMid meet"
             className="absolute inset-0 h-full w-full"
           >
             {regions.map((region, index) => {
@@ -93,37 +86,29 @@ export function AnimatedPalmViewer({
                     d={region.path}
                     fill="transparent"
                     stroke={region.color}
-                    strokeWidth="5"
+                    strokeWidth="18"
                     strokeLinecap="round"
-                    initial={{ pathLength: 0, opacity: 0.25 }}
+                    initial={{ pathLength: 0, opacity: 0.18 }}
                     animate={{
-                      pathLength: isActive ? 1 : 0.55,
-                      opacity: isActive ? 1 : 0.28,
+                      pathLength: isActive ? 1 : 0.42,
+                      opacity: isActive ? 1 : 0.14,
                     }}
-                    transition={{
-                      duration: 1.4,
-                      ease: "easeInOut",
-                    }}
+                    transition={{ duration: 1.8, ease: "easeInOut" }}
                     style={{
-                      filter: isActive
-                        ? `drop-shadow(0 0 12px ${region.color})`
-                        : "none",
+                      filter: isActive ? `drop-shadow(0 0 18px ${region.color})` : "none",
                     }}
                   />
 
                   {isActive && (
                     <motion.circle
-                      r="7"
+                      r="18"
                       fill={region.color}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: [0, 1, 0] }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
                     >
                       <animateMotion
-                        dur="2.6s"
+                        dur="2.8s"
                         repeatCount="indefinite"
                         path={region.path}
                       />
@@ -145,13 +130,8 @@ export function AnimatedPalmViewer({
       >
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-primary">
-              Active Analysis
-            </p>
-
-            <h3 className="mt-2 font-display text-3xl">
-              {activeRegion.label}
-            </h3>
+            <p className="text-xs uppercase tracking-[0.22em] text-primary">Active Analysis</p>
+            <h3 className="mt-2 font-display text-3xl">{activeRegion.label}</h3>
           </div>
 
           <div
@@ -163,9 +143,7 @@ export function AnimatedPalmViewer({
           />
         </div>
 
-        <p className="mt-5 text-base leading-8 text-foreground/90">
-          {activeRegion.insight}
-        </p>
+        <p className="mt-5 text-base leading-8 text-foreground/90">{activeRegion.insight}</p>
       </motion.div>
     </div>
   );
