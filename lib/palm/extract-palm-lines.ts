@@ -5,52 +5,64 @@ export interface PalmLineOverlay {
   points: { x: number; y: number }[];
 }
 
+interface CvMat {
+  delete: () => void;
+}
+
+interface CvContour {
+  data32S: number[];
+}
+
+interface CvMatVector {
+  size: () => number;
+  get: (index: number) => CvContour;
+  delete: () => void;
+}
+
+interface CvKernel {
+  delete: () => void;
+}
+
 declare global {
   interface Window {
     cv?: {
-      imread: (image: HTMLImageElement) => {
-        delete: () => void;
-      };
-      Mat: new () => {
-        delete: () => void;
+      imread: (image: HTMLImageElement) => CvMat;
+      Mat: {
+        new (): CvMat;
+        ones: (
+          rows: number,
+          cols: number,
+          type: number,
+        ) => CvKernel;
       };
       CLAHE: new (
         clipLimit: number,
-        tileGridSize: { width: number; height: number },
+        tileGridSize: {
+          width: number;
+          height: number;
+        },
       ) => {
-        apply: (src: unknown, dst: unknown) => void;
+        apply: (src: CvMat, dst: CvMat) => void;
       };
-      Size: new (width: number, height: number) => {
+      Size: new (
+        width: number,
+        height: number,
+      ) => {
         width: number;
         height: number;
       };
-      MatVector: new () => {
-        size: () => number;
-        get: (index: number) => {
-          data32S: number[];
-        };
-        delete: () => void;
-      };
+      MatVector: new () => CvMatVector;
       morphologyEx: (...args: unknown[]) => void;
       GaussianBlur: (...args: unknown[]) => void;
       cvtColor: (...args: unknown[]) => void;
       Canny: (...args: unknown[]) => void;
       findContours: (...args: unknown[]) => void;
-      contourArea: (contour: { data32S: number[] }) => number;
+      contourArea: (contour: CvContour) => number;
       COLOR_RGBA2GRAY: number;
       MORPH_CLOSE: number;
       RETR_LIST: number;
       CHAIN_APPROX_SIMPLE: number;
       CV_8U: number;
-      Mat: {
-        ones: (
-          rows: number,
-          cols: number,
-          type: number,
-        ) => {
-          delete: () => void;
-        };
-      };
     };
   }
 }
