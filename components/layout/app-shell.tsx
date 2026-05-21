@@ -12,9 +12,11 @@ const navItems = [
 export function AppShell({
   children,
   className,
+  hideMobileNav = false,
 }: {
   children: React.ReactNode;
   className?: string;
+  hideMobileNav?: boolean;
 }) {
   return (
     <div className={cn("min-h-screen cinematic-bg", className)}>
@@ -48,7 +50,7 @@ export function AppShell({
         </div>
       </header>
       <main className="pt-16">{children}</main>
-      <MobileNav />
+      {!hideMobileNav ? <MobileNav /> : null}
     </div>
   );
 }
