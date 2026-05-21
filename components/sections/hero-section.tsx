@@ -13,7 +13,7 @@ export function HeroSection() {
         alt="A warm, cinematic palm scan moment"
         fill
         priority
-        className="object-cover object-[58%_50%] opacity-78"
+        className="object-cover object-[58%_50%] opacity-75"
         sizes="100vw"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/54 to-background" />
