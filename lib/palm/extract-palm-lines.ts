@@ -5,10 +5,60 @@ export interface PalmLineOverlay {
   points: { x: number; y: number }[];
 }
 
+declare global {
+  interface Window {
+    cv?: {
+      imread: (image: HTMLImageElement) => {
+        delete: () => void;
+      };
+      Mat: new () => {
+        delete: () => void;
+      };
+      CLAHE: new (
+        clipLimit: number,
+        tileGridSize: { width: number; height: number },
+      ) => {
+        apply: (src: unknown, dst: unknown) => void;
+      };
+      Size: new (width: number, height: number) => {
+        width: number;
+        height: number;
+      };
+      MatVector: new () => {
+        size: () => number;
+        get: (index: number) => {
+          data32S: number[];
+        };
+        delete: () => void;
+      };
+      morphologyEx: (...args: unknown[]) => void;
+      GaussianBlur: (...args: unknown[]) => void;
+      cvtColor: (...args: unknown[]) => void;
+      Canny: (...args: unknown[]) => void;
+      findContours: (...args: unknown[]) => void;
+      contourArea: (contour: { data32S: number[] }) => number;
+      COLOR_RGBA2GRAY: number;
+      MORPH_CLOSE: number;
+      RETR_LIST: number;
+      CHAIN_APPROX_SIMPLE: number;
+      CV_8U: number;
+      Mat: {
+        ones: (
+          rows: number,
+          cols: number,
+          type: number,
+        ) => {
+          delete: () => void;
+        };
+      };
+    };
+  }
+}
+
 export async function extractPalmLines(
   imageElement: HTMLImageElement,
 ): Promise<PalmLineOverlay[]> {
-  const cv = (window as any).cv;
+  const cv = window.cv;
 
   if (!cv) {
     console.warn("OpenCV.js not loaded");
