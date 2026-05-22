@@ -150,13 +150,15 @@ parsed = JSON.parse(cleanedText);
     }
 
     if (userId) {
-      await supabase.from("palm_readings").insert({
-        user_id: userId,
-        summary: parsed.summary,
-        heart_line: parsed.heart_line,
-        head_line: parsed.head_line,
-        life_line: parsed.life_line,
-      });
+ const insertResult = await supabase
+  .from("palm_readings")
+  .insert({
+    user_id: userId,
+    summary: parsed.summary,
+    heart_line: parsed.heart_line,
+    head_line: parsed.head_line,
+    life_line: parsed.life_line,
+  });
     }
 
     return NextResponse.json({
