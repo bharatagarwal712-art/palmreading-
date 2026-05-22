@@ -19,18 +19,14 @@ export function PalmLineOverlayRenderer({
   const cleanedOverlays = overlays.slice(0, LABEL_LIMIT);
 
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-0 pointer-events-none">
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="absolute inset-0 h-full w-full"
         preserveAspectRatio="none"
       >
         {cleanedOverlays.map((overlay, index) => {
-          const simplifiedPoints = overlay.points.filter(
-            (_, pointIndex) => pointIndex % 3 === 0,
-          );
-
-          const path = simplifiedPoints
+          const path = overlay.points
             .map((point, pointIndex) => {
               const x = point.x * width;
               const y = point.y * height;
@@ -39,7 +35,7 @@ export function PalmLineOverlayRenderer({
             })
             .join(" ");
 
-          const labelPoint = simplifiedPoints[0];
+          const labelPoint = overlay.points[0];
 
           const labelX = labelPoint.x * width;
           const labelY = labelPoint.y * height;
@@ -52,17 +48,17 @@ export function PalmLineOverlayRenderer({
                 d={path}
                 fill="none"
                 stroke={overlay.color}
-                strokeWidth="4"
+                strokeWidth="5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                opacity="0.82"
+                opacity="0.95"
                 style={{
-                  filter: `drop-shadow(0 0 10px ${overlay.color})`,
+                  filter: `drop-shadow(0 0 14px ${overlay.color})`,
                 }}
               >
                 <animate
                   attributeName="stroke-opacity"
-                  values="0.4;1;0.4"
+                  values="0.5;1;0.5"
                   dur="3s"
                   repeatCount="indefinite"
                 />
@@ -71,12 +67,12 @@ export function PalmLineOverlayRenderer({
               <circle
                 cx={labelX}
                 cy={labelY}
-                r="4"
+                r="5"
                 fill={overlay.color}
               >
                 <animate
                   attributeName="r"
-                  values="3;6;3"
+                  values="4;7;4"
                   dur="2.4s"
                   repeatCount="indefinite"
                 />
@@ -88,7 +84,7 @@ export function PalmLineOverlayRenderer({
                 x2={width * 0.08}
                 y2={85 + labelOffsetY}
                 stroke={overlay.color}
-                strokeWidth="1.5"
+                strokeWidth="2"
                 opacity="0.55"
                 strokeDasharray="5 5"
               />
