@@ -121,7 +121,12 @@ Rules:
     let parsed;
 
     try {
-      parsed = JSON.parse(text);
+      const cleanedText = text
+  .replace(/```json/g, "")
+  .replace(/```/g, "")
+  .trim();
+
+parsed = JSON.parse(cleanedText);
     } catch {
       parsed = {
         heart_line: {
