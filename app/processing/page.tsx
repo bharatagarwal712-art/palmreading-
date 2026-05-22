@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ScanLine, Sparkles, Stars } from "lucide-react";
+import { createClient } from "@supabase/supabase-js";
 import { getPalmUpload } from "@/lib/palm-upload-session";
 
 const stages = [
@@ -26,23 +27,58 @@ export default function ProcessingPage() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStageIndex((current) => {
-        if (current >= stages.length - 1) {
-          clearInterval(interval);
+    const analyzePalm = async () => {
+      try {
+        const stored = getPalmUpload();
 
-          setTimeout(() => {
-            window.location.href = "/results";
-          }, 1600);
+        if (!stored) return;
 
-          return current;
-        }
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
 
-        return current + 1;
-      });
-    }, 2400);
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-    return () => clearInterval(interval);
+        const interval = setInterval(() => {
+          setStageIndex((current) => {
+            if (current >= stages.length - 1) {
+              clearInterval(interval);
+              return current;
+            }
+
+            return current + 1;
+          });
+        }, 2400);
+
+        const response = await fetch("/api/analyze-palm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            imageUrl: stored,
+            userId: user?.id,
+          }),
+        });
+
+        const data = await response.json();
+
+        console.log("PALM ANALYSIS:", data);
+
+        clearInterval(interval);
+
+        setTimeout(() => {
+          window.location.href = "/results";
+        }, 1600);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    analyzePalm();
   }, []);
 
   const currentStage = useMemo(() => stages[stageIndex], [stageIndex]);
