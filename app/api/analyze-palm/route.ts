@@ -56,34 +56,24 @@ export async function POST(request: NextRequest) {
 
     const imageBytes = Buffer.from(base64Data, "base64");
 
-    const validationPrompt = `You are a STRICT palm validator.
+    const validationPrompt = `Determine whether this image likely contains a human palm suitable for palm reading.
 
-Your ONLY task is to determine whether the uploaded image contains:
-- a REAL HUMAN PALM
-- front-facing palm
-- visible palm lines
-- suitable image for palm reading
+Accept:
+- open palms
+- partial palms
+- slightly angled palms
+- moderate lighting
+- visible hand lines
 
-You MUST reject:
-- bottles
-- cups
-- random objects
-- tables
+Reject:
+- objects
 - landscapes
 - pets
 - faces
-- side-hand photos
-- closed fists
-- fingers only
-- blurred images
-- dark images
-- AI generated images
 - drawings
-- cartoons
+- non-hand images
 
-If you are not completely certain the image contains a clear human palm, mark it invalid.
-
-Return ONLY JSON.
+Return STRICT JSON ONLY.
 
 VALID:
 {
@@ -93,7 +83,7 @@ VALID:
 INVALID:
 {
   "valid": false,
-  "reason": "No clear human palm detected"
+  "reason": "No palm detected"
 }`;
 
     const validationCommand = new ConverseCommand({
