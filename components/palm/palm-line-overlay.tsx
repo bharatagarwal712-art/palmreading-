@@ -23,22 +23,28 @@ export function PalmLineOverlayRenderer({
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="absolute inset-0 h-full w-full"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="none"
       >
         {cleanedOverlays.map((overlay, index) => {
           const simplifiedPoints = overlay.points.filter(
-            (_, pointIndex) => pointIndex % 5 === 0,
+            (_, pointIndex) => pointIndex % 3 === 0,
           );
 
           const path = simplifiedPoints
-            .map((point, pointIndex) =>
-              `${pointIndex === 0 ? "M" : "L"}${point.x} ${point.y}`,
-            )
+            .map((point, pointIndex) => {
+              const x = point.x * width;
+              const y = point.y * height;
+
+              return `${pointIndex === 0 ? "M" : "L"}${x} ${y}`;
+            })
             .join(" ");
 
           const labelPoint = simplifiedPoints[0];
 
-          const labelOffsetY = index * 70;
+          const labelX = labelPoint.x * width;
+          const labelY = labelPoint.y * height;
+
+          const labelOffsetY = index * 74;
 
           return (
             <g key={overlay.id}>
@@ -46,67 +52,67 @@ export function PalmLineOverlayRenderer({
                 d={path}
                 fill="none"
                 stroke={overlay.color}
-                strokeWidth="5"
+                strokeWidth="4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                opacity="0.9"
+                opacity="0.82"
                 style={{
-                  filter: `drop-shadow(0 0 12px ${overlay.color})`,
+                  filter: `drop-shadow(0 0 10px ${overlay.color})`,
                 }}
               >
                 <animate
                   attributeName="stroke-opacity"
-                  values="0.5;1;0.5"
+                  values="0.4;1;0.4"
                   dur="3s"
                   repeatCount="indefinite"
                 />
               </path>
 
               <circle
-                cx={labelPoint.x}
-                cy={labelPoint.y}
-                r="5"
+                cx={labelX}
+                cy={labelY}
+                r="4"
                 fill={overlay.color}
               >
                 <animate
                   attributeName="r"
-                  values="4;7;4"
+                  values="3;6;3"
                   dur="2.4s"
                   repeatCount="indefinite"
                 />
               </circle>
 
               <line
-                x1={labelPoint.x}
-                y1={labelPoint.y}
+                x1={labelX}
+                y1={labelY}
                 x2={width * 0.08}
-                y2={80 + labelOffsetY}
+                y2={85 + labelOffsetY}
                 stroke={overlay.color}
-                strokeWidth="2"
-                opacity="0.6"
+                strokeWidth="1.5"
+                opacity="0.55"
                 strokeDasharray="5 5"
               />
 
               <foreignObject
                 x={width * 0.05}
-                y={40 + labelOffsetY}
+                y={45 + labelOffsetY}
                 width="220"
                 height="60"
               >
                 <div
-                  className="flex items-center gap-2 rounded-full border border-white/10 bg-black/55 px-3 py-2 backdrop-blur-md"
+                  className="flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-3 py-2 backdrop-blur-md"
                   style={{
-                    boxShadow: `0 0 20px ${overlay.color}33`,
+                    boxShadow: `0 0 20px ${overlay.color}22`,
                   }}
                 >
                   <Sparkles
-                    size={16}
+                    size={15}
                     color={overlay.color}
                     className="animate-pulse"
                   />
 
                   <span
-                    className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+                    className="text-[10px] font-semibold uppercase tracking-[0.18em]"
                     style={{
                       color: overlay.color,
                     }}
