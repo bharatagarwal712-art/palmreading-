@@ -108,12 +108,92 @@ export default function DashboardPage() {
     <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-36 md:px-6 md:py-8">
       <div className="mx-auto max-w-7xl space-y-6">
 
+        {/* HERO */}
         <motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.7 }}
-  className="overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-4 shadow-glow backdrop-blur-xl"
->
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 shadow-glow backdrop-blur-xl md:p-8"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(197,164,107,0.14),transparent_28rem)]" />
+
+          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+
+              <button
+                onClick={() => setShowDrawer(true)}
+                className="mb-4 grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] transition hover:border-primary/20 hover:bg-primary/10"
+              >
+                ☰
+              </button>
+
+              <p className="text-[10px] uppercase tracking-[0.28em] text-primary md:text-xs">
+                AI Palm Reflection
+              </p>
+
+              <h1 className="mt-3 font-display text-4xl leading-tight md:text-7xl md:leading-none">
+                Your emotional energy feels reflective and grounded.
+              </h1>
+
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base md:leading-8">
+                Continue exploring your palm reading through reflective AI conversations and previous readings.
+              </p>
+            </div>
+
+            <Button asChild size="lg" className="w-full lg:w-[220px]">
+              <Link href="/">
+                <Upload className="size-4" />
+                Upload New Palm
+              </Link>
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* MAIN GRID */}
+        <div className="grid gap-6 xl:grid-cols-[0.78fr_1.22fr]">
+
+          {/* LEFT */}
+          <div className="space-y-6">
+
+            {/* IMAGE CARD */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-4 shadow-glow backdrop-blur-xl"
+            >
+              <div className="relative aspect-[0.78] overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-black/30">
+                {preview ? (
+                  <Image
+                    src={preview}
+                    alt="Palm preview"
+                    fill
+                    className="object-cover opacity-90"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
+                    Upload a palm image to begin your reflective AI journey.
+                  </div>
+                )}
+
+                <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/20" />
+              </div>
+
+              <div className="mt-5 rounded-[1.6rem] border border-primary/15 bg-primary/10 p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.24em] text-primary md:text-xs">
+                      Latest Reading
+                    </p>
+
+                    <h2 className="mt-2 text-2xl font-semibold leading-tight">
+                      Quietly Intense & Thoughtful
+                    </h2>
+                  </div>
+
+                  <Clock3 className="size-5 shrink-0 text-primary" />
+                </div>
+              </div>
 
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {highlights.map((item) => {
@@ -142,9 +222,13 @@ export default function DashboardPage() {
                 })}
               </div>
             </motion.div>
+
           </div>
 
+          {/* RIGHT */}
           <div className="space-y-6">
+
+            {/* REPORT */}
             <div className="space-y-4 md:space-y-5">
               {reportSections.map((section, index) => (
                 <motion.div
@@ -185,11 +269,12 @@ export default function DashboardPage() {
               ))}
             </div>
 
+            {/* DESKTOP CHAT */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="fixed bottom-0 left-0 right-0 z-40 rounded-t-[2rem] border border-white/[0.08] bg-background/90 p-4 shadow-glow backdrop-blur-xl md:sticky md:top-4 md:h-fit md:rounded-[2rem] md:bg-white/[0.04] md:p-6"
+              className="hidden md:block sticky top-4 h-fit rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 shadow-glow backdrop-blur-xl"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -211,18 +296,75 @@ export default function DashboardPage() {
                 <div className="flex gap-3">
                   <input
                     placeholder="Ask AI about your palm reading..."
-                    className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none transition focus:border-primary/30"
+                    className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
                   />
 
-                  <button className="grid size-14 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground transition hover:scale-[1.02]">
+                  <button className="grid size-14 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
                     <Sparkles className="size-5" />
                   </button>
                 </div>
               </div>
             </motion.div>
+
           </div>
         </div>
       </div>
+
+      {/* MOBILE FLOATING CHAT */}
+      <div className="md:hidden">
+        {!chatOpen && (
+          <button
+            onClick={() => setChatOpen(true)}
+            className="fixed bottom-5 right-4 z-50 flex items-center gap-3 rounded-full border border-primary/20 bg-background/90 px-5 py-4 shadow-2xl backdrop-blur-xl"
+          >
+            <Sparkles className="size-5 text-primary" />
+
+            <span className="text-sm font-medium">
+              Ask AI
+            </span>
+          </button>
+        )}
+
+        <div
+          className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-[2rem] border border-white/[0.08] bg-background/95 p-5 shadow-2xl backdrop-blur-2xl transition-transform duration-300 ${
+            chatOpen
+              ? "translate-y-0"
+              : "translate-y-full"
+          }`}
+        >
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
+                AI Palm Conversation
+              </p>
+
+              <h2 className="mt-1 text-2xl font-semibold">
+                Ask AI
+              </h2>
+            </div>
+
+            <button
+              onClick={() => setChatOpen(false)}
+              className="text-2xl"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="mt-5 flex gap-3">
+            <input
+              placeholder="Ask AI about your palm..."
+              className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
+            />
+
+            <button className="grid size-14 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
+              <Sparkles className="size-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* DRAWER */}
       {showDrawer && (
         <>
           <div
