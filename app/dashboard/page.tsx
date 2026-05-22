@@ -15,8 +15,7 @@ import {
 import { useEffect, useState } from "react";
 
 import { getPalmUpload } from "@/lib/palm-upload-session";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
+import { createClient } from "@supabase/supabase-js";
 const highlights = [
   {
     icon: Heart,
@@ -63,7 +62,10 @@ const reportSections = [
 ];
 
 export default function DashboardPage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
   const [preview, setPreview] = useState<string | null>(null);
 
