@@ -222,7 +222,6 @@ export default function DashboardPage() {
             </motion.div>
           </div>
         </div>
-      </div>
 
       {showDrawer && (
         <>
