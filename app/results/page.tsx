@@ -95,10 +95,10 @@ export default function ResultsPage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background px-4 py-6 md:px-5 md:py-10">
+    <main className="relative min-h-screen overflow-x-hidden bg-background px-4 py-6 md:px-5 md:py-10">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(197,164,107,0.16),transparent_28rem)]" />
 
-      <div className="relative z-10 mx-auto max-w-7xl">
+      <div className="relative z-10 mx-auto w-full max-w-7xl overflow-x-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -120,20 +120,22 @@ export default function ResultsPage() {
 
         <div className="grid gap-5 md:gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="space-y-4 md:space-y-6 lg:sticky lg:top-8 lg:self-start">
-            <AnnotatedPalmImage imageUrl={preview} />
+            <div className="overflow-hidden rounded-[2rem]">
+              <AnnotatedPalmImage imageUrl={preview} />
+            </div>
 
             <div className="rounded-[1.6rem] border border-primary/15 bg-primary/10 p-5 backdrop-blur-xl md:rounded-[2rem] md:p-6">
               <div className="flex items-center gap-3">
-                <div className="grid size-10 place-items-center rounded-2xl bg-primary/15 text-primary md:size-12">
+                <div className="grid size-10 shrink-0 place-items-center rounded-2xl bg-primary/15 text-primary md:size-12">
                   <Stars className="size-4 md:size-5" />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <p className="text-[10px] uppercase tracking-[0.24em] text-primary md:text-xs">
                     Personality Snapshot
                   </p>
 
-                  <h2 className="mt-1 text-lg font-semibold md:text-2xl">
+                  <h2 className="mt-1 text-lg font-semibold leading-tight md:text-2xl">
                     Quietly Intense & Thoughtful
                   </h2>
                 </div>
@@ -143,7 +145,7 @@ export default function ResultsPage() {
                 Your palm suggests someone who processes emotions deeply, thinks carefully before acting, and values meaningful growth over temporary excitement.
               </p>
 
-              <div className="mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              <div className="mt-6 flex flex-wrap gap-2">
                 {[
                   "Emotionally Aware",
                   "Independent",
@@ -153,7 +155,7 @@ export default function ResultsPage() {
                 ].map((tag) => (
                   <span
                     key={tag}
-                    className="whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-foreground/80"
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-foreground/80"
                   >
                     {tag}
                   </span>
@@ -161,17 +163,17 @@ export default function ResultsPage() {
               </div>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-2 md:overflow-visible">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {highlights.map((item) => {
                 const Icon = item.icon;
 
                 return (
                   <div
                     key={item.title}
-                    className="min-w-[220px] snap-start rounded-[1.3rem] border border-white/[0.08] bg-white/[0.04] p-4 backdrop-blur-xl md:min-w-0"
+                    className="rounded-[1.3rem] border border-white/[0.08] bg-white/[0.04] p-4 backdrop-blur-xl"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="grid size-8 place-items-center rounded-xl bg-primary/10 text-primary">
+                      <div className="grid size-8 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                         <Icon className="size-4" />
                       </div>
 
@@ -189,26 +191,26 @@ export default function ResultsPage() {
             </div>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide lg:grid lg:overflow-visible">
+          <div className="space-y-4 md:space-y-5">
             {reportSections.map((section, index) => (
               <motion.div
                 key={section.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.05 }}
-                className="min-w-[92%] snap-center rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-5 shadow-glow backdrop-blur-xl md:min-w-[78%] md:p-7 lg:min-w-0"
+                className="overflow-hidden rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-5 shadow-glow backdrop-blur-xl md:p-7"
               >
-                <div className="flex items-center gap-3">
-                  <div className="grid size-11 place-items-center rounded-2xl bg-primary/10 text-xl md:size-12 md:text-2xl">
+                <div className="flex items-start gap-3">
+                  <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-xl md:size-12 md:text-2xl">
                     {section.emoji}
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-[0.22em] text-primary md:text-xs">
                       Palm Analysis
                     </p>
 
-                    <h2 className="mt-1 font-display text-2xl leading-tight md:text-3xl">
+                    <h2 className="mt-1 break-words font-display text-2xl leading-tight md:text-3xl">
                       {section.title}
                     </h2>
                   </div>
