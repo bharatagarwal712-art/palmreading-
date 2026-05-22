@@ -11,7 +11,6 @@ import {
   TrendingUp,
   Home,
   LogOut,
-  Upload,
   Menu,
   X,
 } from "lucide-react";
@@ -26,6 +25,17 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+
+type Highlight = {
+  title: string;
+  text: string;
+};
+
+type Reading = {
+  id: string;
+  result?: string;
+  highlights?: Highlight[];
+};
 
 const highlightIcons = [Heart, Brain, TrendingUp];
 
@@ -48,15 +58,9 @@ export default function DashboardPage() {
     null
   );
 
-  const [showDrawer, setShowDrawer] = useState(false);
-
   const [userEmail, setUserEmail] = useState("");
 
-  const [previousReadings, setPreviousReadings] = useState<
-    any[]
-  >([]);
-
-  const [report, setReport] = useState<any>(null);
+  const [report, setReport] = useState<Reading | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -84,9 +88,7 @@ export default function DashboardPage() {
 
       if (!readings?.length) return;
 
-      setPreviousReadings(readings);
-
-      const latestReading = readings[0];
+      const latestReading = readings[0] as Reading;
 
       setReadingId(latestReading.id);
 
@@ -169,7 +171,6 @@ export default function DashboardPage() {
           content: aiReply,
         });
       }
-
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -193,10 +194,7 @@ export default function DashboardPage() {
     report?.highlights?.length
       ? report.highlights.map(
           (
-            item: {
-              title: string;
-              text: string;
-            },
+            item: Highlight,
             index: number
           ) => ({
             ...item,
@@ -210,10 +208,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-40 md:px-6 md:py-8">
-
       <div className="mx-auto max-w-7xl space-y-6">
-
-        {/* HERO */}
         <motion.div
           initial={{
             opacity: 0,
@@ -225,17 +220,10 @@ export default function DashboardPage() {
           }}
           className="rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 backdrop-blur-xl"
         >
-
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-
             <div>
-
               <div className="mb-5 flex items-center gap-3">
-
-                <button
-                  onClick={() => setShowDrawer(true)}
-                  className="grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04]"
-                >
+                <button className="grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04]">
                   <Menu className="size-5" />
                 </button>
 
@@ -246,7 +234,6 @@ export default function DashboardPage() {
                   <Home className="size-4" />
                   Home
                 </Link>
-
               </div>
 
               <p className="text-[10px] uppercase tracking-[0.25em] text-primary">
@@ -256,11 +243,9 @@ export default function DashboardPage() {
               <h1 className="mt-3 text-4xl font-semibold leading-tight md:text-7xl">
                 Your Palm Reading
               </h1>
-
             </div>
 
             <div className="flex items-center gap-3">
-
               <div className="rounded-2xl border border-primary/15 bg-primary/10 px-4 py-3">
                 <p className="text-[10px] uppercase tracking-[0.18em] text-primary">
                   Signed In
@@ -278,21 +263,14 @@ export default function DashboardPage() {
                 <LogOut className="size-4" />
                 Logout
               </button>
-
             </div>
           </div>
         </motion.div>
 
-        {/* GRID */}
         <div className="grid gap-6 xl:grid-cols-[0.78fr_1.22fr]">
-
-          {/* LEFT */}
           <div className="space-y-6">
-
             <div className="rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-4">
-
               <div className="relative aspect-[0.78] overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-black/20">
-
                 {preview ? (
                   <Image
                     src={preview}
@@ -305,11 +283,9 @@ export default function DashboardPage() {
                     Upload a palm image.
                   </div>
                 )}
-
               </div>
 
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-
                 {highlights.map((item) => {
                   const Icon = item.icon;
 
@@ -318,9 +294,7 @@ export default function DashboardPage() {
                       key={item.title}
                       className="rounded-[1.3rem] border border-white/[0.08] bg-white/[0.04] p-4"
                     >
-
                       <div className="flex items-center gap-2">
-
                         <div className="grid size-8 place-items-center rounded-xl bg-primary/10 text-primary">
                           <Icon className="size-4" />
                         </div>
@@ -328,35 +302,26 @@ export default function DashboardPage() {
                         <h3 className="text-sm font-semibold">
                           {item.title}
                         </h3>
-
                       </div>
 
                       <p className="mt-3 text-xs leading-6 text-muted-foreground">
                         {item.text}
                       </p>
-
                     </div>
                   );
                 })}
-
               </div>
-
             </div>
           </div>
 
-          {/* RIGHT */}
           <div className="space-y-6">
-
-            {/* REAL AI REPORT */}
             {report && (
               <div className="rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-5 md:p-7">
-
                 <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
                   AI Palm Analysis
                 </p>
 
                 <div className="mt-6 space-y-6 text-sm leading-8 text-foreground/90 md:text-base">
-
                   {report?.result
                     ?.split("\n\n")
                     .map(
@@ -369,17 +334,12 @@ export default function DashboardPage() {
                         </p>
                       )
                     )}
-
                 </div>
-
               </div>
             )}
 
-            {/* DESKTOP CHAT */}
             <div className="hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 md:block sticky top-4">
-
               <div className="space-y-3 max-h-[340px] overflow-y-auto">
-
                 {messages.map((message, index) => (
                   <div
                     key={index}
@@ -398,11 +358,9 @@ export default function DashboardPage() {
                     AI is thinking...
                   </div>
                 )}
-
               </div>
 
               <div className="mt-5 flex gap-3">
-
                 <input
                   value={input}
                   onChange={(e) =>
@@ -418,18 +376,13 @@ export default function DashboardPage() {
                 >
                   <Sparkles className="size-5" />
                 </button>
-
               </div>
-
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* MOBILE CHAT */}
       <div className="md:hidden">
-
         {!chatOpen && (
           <button
             onClick={() => setChatOpen(true)}
@@ -447,9 +400,7 @@ export default function DashboardPage() {
               : "translate-y-full"
           }`}
         >
-
           <div className="mb-5 flex items-center justify-between">
-
             <h2 className="text-2xl font-semibold">
               Ask AI
             </h2>
@@ -460,11 +411,9 @@ export default function DashboardPage() {
             >
               <X className="size-6" />
             </button>
-
           </div>
 
           <div className="space-y-3 max-h-[300px] overflow-y-auto">
-
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -477,11 +426,9 @@ export default function DashboardPage() {
                 {message.text}
               </div>
             ))}
-
           </div>
 
           <div className="mt-5 flex gap-3">
-
             <input
               value={input}
               onChange={(e) =>
@@ -497,11 +444,8 @@ export default function DashboardPage() {
             >
               <Sparkles className="size-5" />
             </button>
-
           </div>
-
         </div>
-
       </div>
     </main>
   );
