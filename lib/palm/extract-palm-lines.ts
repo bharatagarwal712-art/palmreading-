@@ -1,8 +1,13 @@
+export interface PalmPoint {
+  x: number;
+  y: number;
+}
+
 export interface PalmLineOverlay {
   id: string;
   label: string;
   color: string;
-  points: { x: number; y: number }[];
+  points: PalmPoint[];
 }
 
 interface CvMat {
@@ -77,6 +82,9 @@ export async function extractPalmLines(
     return [];
   }
 
+  const sourceWidth = imageElement.naturalWidth;
+  const sourceHeight = imageElement.naturalHeight;
+
   const src = cv.imread(imageElement);
 
   const gray = new cv.Mat();
@@ -120,18 +128,24 @@ export async function extractPalmLines(
 
     const area = cv.contourArea(contour);
 
-    if (area < 120) continue;
+    if (area < 180) continue;
 
-    const points: { x: number; y: number }[] = [];
+    const points: PalmPoint[] = [];
 
     for (let j = 0; j < contour.data32S.length; j += 2) {
+      const rawX = contour.data32S[j];
+      const rawY = contour.data32S[j + 1];
+
+      const normalizedX = rawX / sourceWidth;
+      const normalizedY = rawY / sourceHeight;
+
       points.push({
-        x: contour.data32S[j],
-        y: contour.data32S[j + 1],
+        x: normalizedX,
+        y: normalizedY,
       });
     }
 
-    if (points.length < 18) continue;
+    if (points.length < 22) continue;
 
     const averageY =
       points.reduce((sum, point) => sum + point.y, 0) /
@@ -140,10 +154,10 @@ export async function extractPalmLines(
     let label = "Palm Line";
     let color = "#7dd3fc";
 
-    if (averageY < imageElement.height * 0.38) {
+    if (averageY < 0.38) {
       label = "Heart Line";
       color = "#7dd3fc";
-    } else if (averageY < imageElement.height * 0.58) {
+    } else if (averageY < 0.58) {
       label = "Head Line";
       color = "#c4b5fd";
     } else {
@@ -169,5 +183,5 @@ export async function extractPalmLines(
   hierarchy.delete();
   kernel.delete();
 
-  return overlays.slice(0, 12);
+  return overlays.slice(0, 8);
 }
