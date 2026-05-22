@@ -41,6 +41,19 @@ export async function POST(request: NextRequest) {
       ""
     );
 
+    const mimeMatch = imageUrl.match(
+      /^data:(image\/[a-zA-Z0-9.+-]+);base64,/
+    );
+
+    const mimeType = mimeMatch?.[1] || "image/jpeg";
+
+    const format =
+      mimeType.includes("png")
+        ? "png"
+        : mimeType.includes("webp")
+          ? "webp"
+          : "jpeg";
+
     const imageBytes = Buffer.from(base64Data, "base64");
 
     const validationPrompt = `You are a STRICT palm validator.
@@ -94,7 +107,7 @@ INVALID:
             },
             {
               image: {
-                format: "jpeg",
+                format,
                 source: {
                   bytes: imageBytes,
                 },
@@ -178,7 +191,7 @@ Rules:
             },
             {
               image: {
-                format: "jpeg",
+                format,
                 source: {
                   bytes: imageBytes,
                 },
