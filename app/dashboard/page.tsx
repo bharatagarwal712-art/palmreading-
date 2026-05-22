@@ -8,7 +8,6 @@ import {
   Clock3,
   Heart,
   Brain,
-  MessageCircle,
   Sparkles,
   Stars,
   TrendingUp,
@@ -70,27 +69,31 @@ const reportSections = [
     title: "Hand Overview",
     insight:
       "Your palm reflects someone who balances emotional depth with careful observation.",
-    text: "Your overall palm structure suggests a thoughtful personality that prefers understanding situations deeply before acting. You likely notice emotional tone, hidden intentions, and subtle behavioral patterns more quickly than most people around you. Rather than reacting impulsively, you tend to observe first and process internally.\n\nYour energy feels grounded yet emotionally aware. This combination often appears in people who value stability, meaningful relationships, and personal growth over short-term excitement. You may appear calm externally even during emotionally intense periods.",
+    text:
+      "Your overall palm structure suggests a thoughtful personality that prefers understanding situations deeply before acting.\n\nYour energy feels grounded yet emotionally aware.",
   },
   {
     emoji: "❤️",
     title: "Heart Line Reading",
     insight:
       "You value emotional safety, loyalty, and depth over surface-level connection.",
-    text: "Your emotional patterns suggest someone who forms attachments carefully rather than instantly. You may take time before fully trusting people, but once emotionally connected, you become deeply loyal and supportive.\n\nOne strong trait visible in your emotional energy is emotional memory. You tend to remember how people made you feel for a long time. This can make you very compassionate, but it can also lead to overthinking emotional situations internally.",
+    text:
+      "Your emotional patterns suggest someone who forms attachments carefully rather than instantly.\n\nYou become deeply loyal once emotionally connected.",
   },
   {
     emoji: "🧠",
     title: "Head Line Reading",
     insight:
       "Your mind combines analysis with imagination and emotional intelligence.",
-    text: "Your thinking style appears reflective and layered. Instead of making quick surface-level judgments, you naturally analyze situations from multiple angles before deciding. This often helps you avoid careless mistakes, though it may sometimes create hesitation during uncertain situations.\n\nYou likely learn best through experience, observation, and internal reflection rather than rigid memorization. Creative problem-solving and intuitive thinking seem stronger for you than repetitive structure.",
+    text:
+      "Your thinking style appears reflective and layered.\n\nYou naturally analyze situations from multiple angles before deciding.",
   },
 ];
 
 export default function DashboardPage() {
   const [preview, setPreview] = useState<string | null>(null);
   const [questionCount] = useState(5);
+  const [showDrawer, setShowDrawer] = useState(false);
 
   useEffect(() => {
     const stored = getPalmUpload();
@@ -101,7 +104,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 md:px-6 md:py-8">
+    <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-36 md:px-6 md:py-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -113,6 +116,13 @@ export default function DashboardPage() {
 
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-3xl">
+              <button
+                onClick={() => setShowDrawer(true)}
+                className="mb-4 grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] transition hover:border-primary/20 hover:bg-primary/10"
+              >
+                ☰
+              </button>
+
               <p className="text-[10px] uppercase tracking-[0.28em] text-primary md:text-xs">
                 AI Palm Reflection
               </p>
@@ -122,7 +132,8 @@ export default function DashboardPage() {
               </h1>
 
               <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base md:leading-8">
-                Continue exploring your palm reading through reflective AI conversations and previous readings.
+                Continue exploring your palm reading through reflective AI
+                conversations and previous readings.
               </p>
             </div>
 
@@ -220,50 +231,6 @@ export default function DashboardPage() {
                 })}
               </div>
             </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 shadow-glow backdrop-blur-xl"
-            >
-              <div className="flex items-center gap-3">
-                <div className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary">
-                  <Stars className="size-5" />
-                </div>
-
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary md:text-xs">
-                    Previous Readings
-                  </p>
-
-                  <h2 className="mt-1 font-display text-3xl leading-tight">
-                    Your palm history
-                  </h2>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                {previousReadings.map((item) => (
-                  <button
-                    key={item.date}
-                    className="flex w-full items-center justify-between rounded-[1.5rem] border border-white/[0.08] bg-black/20 px-4 py-4 text-left transition hover:border-primary/25 hover:bg-primary/10"
-                  >
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
-                        {item.date}
-                      </p>
-
-                      <p className="mt-2 text-sm leading-6 text-foreground/90">
-                        {item.title}
-                      </p>
-                    </div>
-
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
-                  </button>
-                ))}
-              </div>
-            </motion.div>
           </div>
 
           <div className="space-y-6">
@@ -311,7 +278,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="sticky top-4 h-fit rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 shadow-glow backdrop-blur-xl"
+              className="fixed bottom-0 left-0 right-0 z-40 rounded-t-[2rem] border border-white/[0.08] bg-background/90 p-4 shadow-glow backdrop-blur-xl md:sticky md:top-4 md:h-fit md:rounded-[2rem] md:bg-white/[0.04] md:p-6"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -327,35 +294,6 @@ export default function DashboardPage() {
                 <div className="rounded-full border border-primary/15 bg-primary/10 px-4 py-2 text-xs text-primary">
                   {questionCount} of 5 questions remaining
                 </div>
-              </div>
-
-              <div className="mt-8 space-y-4">
-                <div className="flex justify-end">
-                  <div className="max-w-[88%] rounded-[1.6rem] rounded-br-md bg-primary px-5 py-4 text-sm leading-7 text-primary-foreground shadow-lg">
-                    Why do I emotionally withdraw sometimes?
-                  </div>
-                </div>
-
-                <div className="flex justify-start">
-                  <div className="max-w-[92%] rounded-[1.6rem] rounded-bl-md border border-white/[0.08] bg-black/20 px-5 py-4 text-sm leading-7 text-foreground/90 backdrop-blur-xl">
-                    Your reading suggests you naturally process emotions internally before expressing them outwardly. This usually appears in people who value emotional safety and prefer understanding their feelings fully before becoming vulnerable.
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 space-y-3">
-                {aiQuestions.map((question) => (
-                  <button
-                    key={question}
-                    className="flex w-full items-center justify-between rounded-[1.4rem] border border-white/[0.08] bg-black/20 px-4 py-4 text-left text-sm leading-6 transition hover:border-primary/30 hover:bg-primary/10"
-                  >
-                    <span className="max-w-[85%]">
-                      {question}
-                    </span>
-
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
-                  </button>
-                ))}
               </div>
 
               <div className="mt-8 border-t border-white/[0.06] pt-5">
@@ -374,6 +312,53 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {showDrawer && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowDrawer(false)}
+          />
+
+          <div className="fixed left-0 top-0 z-50 h-full w-[88%] max-w-sm border-r border-white/[0.08] bg-background p-5 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
+                  Palm History
+                </p>
+
+                <h2 className="mt-2 text-3xl font-semibold">
+                  Previous Readings
+                </h2>
+              </div>
+
+              <button
+                onClick={() => setShowDrawer(false)}
+                className="text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="mt-8 space-y-3">
+              {previousReadings.map((item) => (
+                <button
+                  key={item.date}
+                  className="w-full rounded-[1.5rem] border border-white/[0.08] bg-white/[0.04] p-4 text-left transition hover:border-primary/20 hover:bg-primary/10"
+                >
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
+                    {item.date}
+                  </p>
+
+                  <p className="mt-2 text-sm leading-6 text-foreground/90">
+                    {item.title}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </main>
   );
 }
