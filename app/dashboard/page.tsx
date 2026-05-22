@@ -304,7 +304,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            <div className="block rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 sticky top-4">
+            <div className="hidden md:block rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 sticky top-4">
               <div className="space-y-3 max-h-[340px] overflow-y-auto">
                 {messages.map((message, index) => (
                   <div
@@ -340,65 +340,63 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="md:hidden">
-        {!chatOpen && (
-          <button
-            onClick={() => setChatOpen(true)}
-            className="fixed bottom-5 right-4 z-50 flex items-center gap-3 rounded-full bg-primary px-5 py-4 text-primary-foreground shadow-2xl"
-          >
-            <Sparkles className="size-5" />
-            Ask AI
-          </button>
-        )}
+      {!chatOpen && (
+        <button
+          onClick={() => setChatOpen(true)}
+          className="fixed bottom-5 right-4 z-[120] flex items-center gap-3 rounded-full bg-primary px-5 py-4 text-primary-foreground shadow-2xl md:hidden"
+        >
+          <Sparkles className="size-5" />
+          Ask AI
+        </button>
+      )}
 
-        {chatOpen && (
-          <div className="fixed inset-0 z-[80] bg-background p-5">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-2xl font-semibold">
-                Ask AI
-              </h2>
+      {chatOpen && (
+        <div className="fixed inset-0 z-[130] bg-background p-5 md:hidden">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-2xl font-semibold">
+              Ask AI
+            </h2>
 
-              <button
-                onClick={() => setChatOpen(false)}
-                className="grid size-11 place-items-center rounded-2xl border border-white/[0.08]"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3 max-h-[65vh] overflow-y-auto">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`rounded-2xl p-4 text-sm leading-7 ${
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-white/[0.05]"
-                  }`}
-                >
-                  {message.text}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 flex gap-3">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask AI about your palm..."
-                className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
-              />
-
-              <button
-                onClick={askAI}
-                className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground"
-              >
-                <Sparkles className="size-5" />
-              </button>
-            </div>
+            <button
+              onClick={() => setChatOpen(false)}
+              className="grid size-11 place-items-center rounded-2xl border border-white/[0.08]"
+            >
+              <X className="size-5" />
+            </button>
           </div>
-        )}
-      </div>
+
+          <div className="space-y-3 max-h-[65vh] overflow-y-auto">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`rounded-2xl p-4 text-sm leading-7 ${
+                  message.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-white/[0.05]"
+                }`}
+              >
+                {message.text}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 flex gap-3">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask AI about your palm..."
+              className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
+            />
+
+            <button
+              onClick={askAI}
+              className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground"
+            >
+              <Sparkles className="size-5" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {showDrawer && (
         <>
