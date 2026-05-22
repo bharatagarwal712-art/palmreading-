@@ -2,36 +2,84 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Stars } from "lucide-react";
+import {
+  ArrowRight,
+  Brain,
+  Heart,
+  Sparkles,
+  Stars,
+  TrendingUp,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPalmUpload } from "@/lib/palm-upload-session";
 import { useEffect, useState } from "react";
 import { AnnotatedPalmImage } from "@/components/palm/annotated-palm-image";
 
+const highlights = [
+  {
+    icon: Heart,
+    title: "Emotionally Deep",
+    text: "You feel emotions intensely but reveal them selectively.",
+  },
+  {
+    icon: Brain,
+    title: "Reflective Thinker",
+    text: "You mentally process situations deeply before reacting.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Quietly Ambitious",
+    text: "You grow steadily through consistency rather than impulse.",
+  },
+  {
+    icon: Sparkles,
+    title: "Strong Intuition",
+    text: "You notice emotional patterns others often miss.",
+  },
+];
+
 const reportSections = [
   {
-    title: "Emotional Profile",
-    text: "Your palm reflects someone who experiences emotions deeply but reveals them selectively. The heart line suggests emotional caution combined with long-term loyalty once trust is established. You appear observant in relationships and emotionally analytical before fully opening up.",
+    emoji: "✋",
+    title: "Hand Overview",
+    insight:
+      "Your palm reflects someone who balances emotional depth with careful observation.",
+    text: "Your overall palm structure suggests a thoughtful personality that prefers understanding situations deeply before acting. You likely notice emotional tone, hidden intentions, and subtle behavioral patterns more quickly than most people around you. Rather than reacting impulsively, you tend to observe first and process internally.\n\nYour energy feels grounded yet emotionally aware. This combination often appears in people who value stability, meaningful relationships, and personal growth over short-term excitement. You may appear calm externally even during emotionally intense periods.",
   },
   {
-    title: "Relationship Patterns",
-    text: "You seek emotionally intelligent connections where depth, consistency, and emotional maturity matter more than surface excitement. Your palm indicates strong emotional memory and sensitivity to emotional imbalance within close relationships.",
+    emoji: "❤️",
+    title: "Heart Line Reading",
+    insight:
+      "You value emotional safety, loyalty, and depth over surface-level connection.",
+    text: "Your emotional patterns suggest someone who forms attachments carefully rather than instantly. You may take time before fully trusting people, but once emotionally connected, you become deeply loyal and supportive.\n\nOne strong trait visible in your emotional energy is emotional memory. You tend to remember how people made you feel for a long time. This can make you very compassionate, but it can also lead to overthinking emotional situations internally.",
   },
   {
+    emoji: "🧠",
+    title: "Head Line Reading",
+    insight:
+      "Your mind combines analysis with imagination and emotional intelligence.",
+    text: "Your thinking style appears reflective and layered. Instead of making quick surface-level judgments, you naturally analyze situations from multiple angles before deciding. This often helps you avoid careless mistakes, though it may sometimes create hesitation during uncertain situations.\n\nYou likely learn best through experience, observation, and internal reflection rather than rigid memorization. Creative problem-solving and intuitive thinking seem stronger for you than repetitive structure.",
+  },
+  {
+    emoji: "🚀",
     title: "Career & Ambition",
-    text: "The structure of your head line and central palm area suggests strong independent thinking patterns. You perform best in environments where autonomy, creativity, and strategic thinking are valued over rigid structure.",
+    insight:
+      "You perform best when your work feels meaningful and self-directed.",
+    text: "Your palm reflects independent ambition rather than aggressive competition. You seem motivated by purpose, growth, and internal satisfaction more than external validation alone.\n\nYou likely thrive in environments where creativity, strategic thinking, or emotional understanding matter. Strictly repetitive systems may mentally exhaust you over time because your energy naturally seeks evolution and improvement.",
   },
   {
-    title: "Current Life Energy",
-    text: "Your palm currently reflects transition energy — a phase involving internal restructuring, emotional clarity, and deeper self-awareness. Rather than dramatic external change, your energy suggests quiet psychological evolution.",
+    emoji: "🌱",
+    title: "Current Life Phase",
+    insight:
+      "You are entering a phase of emotional clarity and internal restructuring.",
+    text: "Your current energy suggests reflection, transition, and deeper self-awareness. This does not necessarily mean dramatic external change — instead, it often points toward psychological growth and emotional maturity developing internally.\n\nYou may currently feel more selective about people, opportunities, and environments than before. This usually happens when someone begins aligning more strongly with their personal values.",
   },
   {
-    title: "Inner Challenges",
-    text: "One recurring pattern visible in your palm is internal over-analysis. You often mentally process situations deeply before acting, which can create hesitation during emotionally uncertain periods.",
-  },
-  {
-    title: "Hidden Strengths",
-    text: "Your strongest underlying trait appears to be emotional resilience. Even during uncertainty or emotional pressure, your patterns suggest an ability to reorganize internally and recover with stronger clarity over time.",
+    emoji: "✨",
+    title: "Final Reflection",
+    insight:
+      "Your greatest strength is emotional resilience combined with quiet intelligence.",
+    text: "Your palm reflects someone who grows through reflection rather than impulse. Even when situations become emotionally difficult, you seem capable of reorganizing yourself internally and returning stronger with better clarity.\n\nOne of your strongest hidden traits is adaptability. While others may notice your calm nature first, your deeper strength comes from your ability to quietly evolve without losing your core values.",
   },
 ];
 
@@ -55,35 +103,89 @@ export default function ResultsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-10 flex items-center justify-between"
+          className="mb-10"
         >
-          <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-primary">
-              Psychological Palm Reflection
-            </p>
+          <p className="text-xs uppercase tracking-[0.28em] text-primary">
+            Premium Palm Reflection
+          </p>
 
-            <h1 className="mt-3 max-w-3xl font-display text-5xl leading-none md:text-7xl">
-              Your palm reflects emotional depth and intuitive intelligence.
-            </h1>
-          </div>
+          <h1 className="mt-4 max-w-4xl font-display text-5xl leading-none md:text-7xl">
+            Your palm reflects emotional intelligence, resilience, and deep inner reflection.
+          </h1>
 
-          <div className="hidden md:grid size-14 place-items-center rounded-3xl bg-primary/10 text-primary md:grid">
-            <Stars className="size-6" />
-          </div>
+          <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground">
+            This reading combines traditional palmistry symbolism with emotionally reflective personality interpretation.
+          </p>
         </motion.div>
 
-        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="space-y-6 lg:sticky lg:top-8 lg:self-start">
             <AnnotatedPalmImage imageUrl={preview} />
 
             <div className="rounded-[2rem] border border-primary/15 bg-primary/10 p-6 backdrop-blur-xl">
-              <p className="text-xs uppercase tracking-[0.24em] text-primary">
-                Palm Summary
+              <div className="flex items-center gap-3">
+                <div className="grid size-12 place-items-center rounded-2xl bg-primary/15 text-primary">
+                  <Stars className="size-5" />
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-[0.24em] text-primary">
+                    Personality Snapshot
+                  </p>
+
+                  <h2 className="mt-1 text-2xl font-semibold">
+                    Quietly Intense & Thoughtful
+                  </h2>
+                </div>
+              </div>
+
+              <p className="mt-5 text-sm leading-7 text-foreground/90">
+                Your palm suggests someone who processes emotions deeply, thinks carefully before acting, and values meaningful growth over temporary excitement.
               </p>
 
-              <p className="mt-4 text-base leading-8 text-foreground/90">
-                Your palm suggests a personality shaped by emotional observation, reflective intelligence, and resilience during transitional periods. You appear driven by meaning and internal alignment rather than impulsive external validation.
-              </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {[
+                  "Emotionally Aware",
+                  "Independent",
+                  "Reflective",
+                  "Intuitive",
+                  "Resilient",
+                ].map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-foreground/80"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {highlights.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div
+                    key={item.title}
+                    className="rounded-[1.6rem] border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-xl"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="grid size-10 place-items-center rounded-2xl bg-primary/10 text-primary">
+                        <Icon className="size-4" />
+                      </div>
+
+                      <h3 className="text-sm font-semibold">
+                        {item.title}
+                      </h3>
+                    </div>
+
+                    <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                      {item.text}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -93,20 +195,36 @@ export default function ResultsPage() {
                 key={section.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.06 }}
+                transition={{ duration: 0.6, delay: index * 0.05 }}
                 className="rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-7 shadow-glow backdrop-blur-xl"
               >
-                <p className="text-xs uppercase tracking-[0.22em] text-primary">
-                  Analysis
-                </p>
+                <div className="flex items-center gap-3">
+                  <div className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-2xl">
+                    {section.emoji}
+                  </div>
 
-                <h2 className="mt-3 font-display text-4xl leading-tight">
-                  {section.title}
-                </h2>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.22em] text-primary">
+                      Palm Analysis
+                    </p>
 
-                <p className="mt-5 text-base leading-8 text-foreground/90">
-                  {section.text}
-                </p>
+                    <h2 className="mt-1 font-display text-3xl leading-tight">
+                      {section.title}
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="mt-6 rounded-2xl border border-primary/10 bg-primary/5 p-5">
+                  <p className="text-lg italic leading-8 text-foreground/90">
+                    “{section.insight}”
+                  </p>
+                </div>
+
+                <div className="mt-6 space-y-5 text-base leading-8 text-foreground/90">
+                  {section.text.split("\n\n").map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
               </motion.div>
             ))}
 
@@ -117,15 +235,15 @@ export default function ResultsPage() {
               className="rounded-[2rem] border border-primary/20 bg-primary/10 p-7"
             >
               <p className="text-xs uppercase tracking-[0.24em] text-primary">
-                Continue Your Reading
+                Continue Your Journey
               </p>
 
-              <h3 className="mt-3 font-display text-4xl leading-tight">
-                Save your palm analysis and unlock AI conversations.
+              <h3 className="mt-3 max-w-2xl font-display text-4xl leading-tight">
+                Save your readings and unlock future AI palm reflections.
               </h3>
 
               <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
-                Continue with Google to store your annotated palm analysis, future reports, and personalized AI reflections securely.
+                Continue with Google to securely save your palm readings, future reports, and personalized AI insights.
               </p>
 
               <Button asChild size="lg" className="mt-6">
