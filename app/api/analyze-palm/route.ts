@@ -30,6 +30,72 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const validationPrompt = `You are validating whether an uploaded image contains a clearly visible human palm.
+
+Return STRICT JSON ONLY.
+
+If the image contains a visible human palm suitable for palm reading:
+{
+  "valid": true
+}
+
+If the image does not contain a palm:
+{
+  "valid": false,
+  "reason": "No visible human palm detected"
+}
+
+Do not hallucinate.
+
+Image URL:
+${imageUrl}`;
+
+    const validationCommand = new ConverseCommand({
+      modelId: "amazon.nova-lite-v1:0",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              text: validationPrompt,
+            },
+          ],
+        },
+      ],
+      inferenceConfig: {
+        maxTokens: 200,
+        temperature: 0.1,
+        topP: 0.8,
+      },
+    });
+
+    const validationResponse = await client.send(validationCommand);
+
+    const validationText =
+      validationResponse.output?.message?.content?.[0]?.text || "{}";
+
+    let validation;
+
+    try {
+      validation = JSON.parse(validationText);
+    } catch {
+      validation = {
+        valid: false,
+      };
+    }
+
+    if (!validation.valid) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Please upload a clear image of a human palm.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
     const prompt = `You are an emotionally intelligent AI palm reader.
 
 Analyze the uploaded palm image.
@@ -54,7 +120,8 @@ Required format:
 }
 
 Generate believable SVG paths for overlay animation.
-Use cinematic emotional language.
+Keep the tone human, conversational, emotionally intelligent, and concise.
+Avoid philosophical language.
 Avoid dangerous predictions.
 
 Palm Image URL:
@@ -74,7 +141,7 @@ ${imageUrl}`;
       ],
       inferenceConfig: {
         maxTokens: 1200,
-        temperature: 0.8,
+        temperature: 0.7,
         topP: 0.9,
       },
     });
@@ -93,20 +160,20 @@ ${imageUrl}`;
         heart_line: {
           path: "M55 130 C120 90 190 105 255 95",
           insight:
-            "Emotionally protective and observant before trusting others.",
+            "You care deeply but take time before fully trusting people.",
         },
         head_line: {
           path: "M60 185 C130 170 205 165 275 175",
           insight:
-            "Strong reflective thinking patterns combined with intuition-driven decisions.",
+            "You tend to think carefully before making decisions.",
         },
         life_line: {
           path: "M115 80 C55 170 85 270 160 360",
           insight:
-            "Independent energy with resilience during emotionally transformative phases.",
+            "You adapt well during emotionally intense phases of life.",
         },
         summary:
-          "Your palm suggests emotional depth, intuitive intelligence, and independent growth energy.",
+          "Your palm reflects emotional depth, balanced thinking, and resilient energy.",
         raw: text,
       };
     }
