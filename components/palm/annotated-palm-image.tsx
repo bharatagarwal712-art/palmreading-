@@ -35,7 +35,7 @@ export function AnnotatedPalmImage({
       if (!imageRef.current) return;
 
       try {
-        const extracted = await extractPalmLines(imageRef.current);
+        const extracted = await extractPalmLines();
 
         setOverlays(extracted);
 
