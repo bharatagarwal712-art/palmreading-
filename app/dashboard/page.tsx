@@ -108,6 +108,12 @@ export default function DashboardPage() {
     <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-36 md:px-6 md:py-8">
       <div className="mx-auto max-w-7xl space-y-6">
 
+        <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.7 }}
+  className="overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-4 shadow-glow backdrop-blur-xl"
+>
 
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {highlights.map((item) => {
