@@ -1,8 +1,10 @@
+```tsx
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+
 import {
   Sparkles,
   Heart,
@@ -10,63 +12,25 @@ import {
   TrendingUp,
   Home,
   LogOut,
+  Upload,
+  Menu,
+  X,
 } from "lucide-react";
 
 import { useEffect, useState } from "react";
 
 import { getPalmUpload } from "@/lib/palm-upload-session";
+
 import { createClient } from "@supabase/supabase-js";
-const highlights = [
-  {
-    icon: Heart,
-    title: "Emotionally Deep",
-    text: "You feel emotions strongly but reveal them selectively.",
-  },
-  {
-    icon: Brain,
-    title: "Reflective Thinker",
-    text: "You naturally analyze situations before reacting.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Quietly Ambitious",
-    text: "You grow steadily through consistency and patience.",
-  },
-];
 
-const reportSections = [
-  {
-    emoji: "✋",
-    title: "Hand Overview",
-    insight:
-      "You appear emotionally aware, observant, and internally driven.",
-    text:
-      "Your palm suggests a thoughtful personality that tends to process emotions deeply before expressing them.\n\nYou seem calm externally but mentally active internally.",
-  },
-  {
-    emoji: "❤️",
-    title: "Heart Line",
-    insight:
-      "You value emotional trust and depth more than surface-level connection.",
-    text:
-      "You likely take time before opening up emotionally.\n\nOnce attached, you become consistent and loyal.",
-  },
-  {
-    emoji: "🧠",
-    title: "Head Line",
-    insight:
-      "Your thinking combines logic, observation, and emotional intelligence.",
-    text:
-      "You naturally reflect before making decisions.\n\nYou notice emotional patterns others usually miss.",
-  },
-];
-
-export default function DashboardPage() {
-  const supabase = createClient(
+const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+const highlightIcons = [Heart, Brain, TrendingUp];
+
+export default function DashboardPage() {
   const [preview, setPreview] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<
@@ -85,6 +49,16 @@ export default function DashboardPage() {
     null
   );
 
+  const [showDrawer, setShowDrawer] = useState(false);
+
+  const [userEmail, setUserEmail] = useState("");
+
+  const [previousReadings, setPreviousReadings] = useState<
+    any[]
+  >([]);
+
+  const [report, setReport] = useState<any>(null);
+
   useEffect(() => {
     const loadData = async () => {
       const stored = getPalmUpload();
@@ -99,24 +73,30 @@ export default function DashboardPage() {
 
       if (!user) return;
 
-      const { data: reading } = await supabase
+      setUserEmail(user.email || "");
+
+      const { data: readings } = await supabase
         .from("palm_readings")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", {
           ascending: false,
-        })
-        .limit(1)
-        .single();
+        });
 
-      if (!reading) return;
+      if (!readings?.length) return;
 
-      setReadingId(reading.id);
+      setPreviousReadings(readings);
+
+      const latestReading = readings[0];
+
+      setReadingId(latestReading.id);
+
+      setReport(latestReading);
 
       const { data: existingMessages } = await supabase
         .from("ai_messages")
         .select("*")
-        .eq("reading_id", reading.id)
+        .eq("reading_id", latestReading.id)
         .order("created_at", {
           ascending: true,
         });
@@ -204,6 +184,31 @@ export default function DashboardPage() {
     setLoading(false);
   };
 
+  const logout = async () => {
+    await supabase.auth.signOut();
+
+    window.location.href = "/";
+  };
+
+  const highlights =
+    report?.highlights?.length
+      ? report.highlights.map(
+          (
+            item: {
+              title: string;
+              text: string;
+            },
+            index: number
+          ) => ({
+            ...item,
+            icon:
+              highlightIcons[
+                index % highlightIcons.length
+              ],
+          })
+        )
+      : [];
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-40 md:px-6 md:py-8">
 
@@ -222,15 +227,22 @@ export default function DashboardPage() {
           className="rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 backdrop-blur-xl"
         >
 
-          <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
 
             <div>
 
               <div className="mb-5 flex items-center gap-3">
 
+                <button
+                  onClick={() => setShowDrawer(true)}
+                  className="grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04]"
+                >
+                  <Menu className="size-5" />
+                </button>
+
                 <Link
                   href="/"
-                  className="flex h-11 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 text-sm"
+                  className="flex h-12 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 text-sm"
                 >
                   <Home className="size-4" />
                   Home
@@ -242,8 +254,8 @@ export default function DashboardPage() {
                 AI Palm Reflection
               </p>
 
-              <h1 className="mt-3 text-4xl font-semibold leading-tight md:text-6xl">
-                Your emotional patterns feel thoughtful and reflective.
+              <h1 className="mt-3 text-4xl font-semibold leading-tight md:text-7xl">
+                Your Palm Reading
               </h1>
 
             </div>
@@ -256,11 +268,14 @@ export default function DashboardPage() {
                 </p>
 
                 <p className="mt-1 text-sm font-medium">
-                  user@gmail.com
+                  {userEmail || "Loading..."}
                 </p>
               </div>
 
-              <button className="flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm">
+              <button
+                onClick={logout}
+                className="flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm"
+              >
                 <LogOut className="size-4" />
                 Logout
               </button>
@@ -333,46 +348,81 @@ export default function DashboardPage() {
           {/* RIGHT */}
           <div className="space-y-6">
 
-            {reportSections.map((section) => (
-              <div
-                key={section.title}
-                className="rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-5"
-              >
+            {/* REAL AI REPORT */}
+            {report && (
+              <div className="rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-5 md:p-7">
 
-                <div className="flex items-start gap-3">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
+                  AI Palm Analysis
+                </p>
 
-                  <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-xl">
-                    {section.emoji}
-                  </div>
+                <div className="mt-6 space-y-6 text-sm leading-8 text-foreground/90 md:text-base">
 
-                  <div>
+                  {report?.result
+                    ?.split("\n\n")
+                    .map(
+                      (
+                        paragraph: string,
+                        index: number
+                      ) => (
+                        <p key={index}>
+                          {paragraph}
+                        </p>
+                      )
+                    )}
 
-                    <h2 className="text-2xl font-semibold">
-                      {section.title}
-                    </h2>
-
-                  </div>
-
-                </div>
-
-                <div className="mt-5 rounded-2xl border border-primary/10 bg-primary/5 p-4">
-                  <p className="italic leading-7">
-                    “{section.insight}”
-                  </p>
-                </div>
-
-                <div className="mt-5 space-y-4 text-sm leading-7">
-                  {section.text
-                    .split("\n\n")
-                    .map((paragraph) => (
-                      <p key={paragraph}>
-                        {paragraph}
-                      </p>
-                    ))}
                 </div>
 
               </div>
-            ))}
+            )}
+
+            {/* DESKTOP CHAT */}
+            <div className="hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 md:block sticky top-4">
+
+              <div className="space-y-3 max-h-[340px] overflow-y-auto">
+
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`rounded-2xl p-4 text-sm leading-7 ${
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-white/[0.05]"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                ))}
+
+                {loading && (
+                  <div className="rounded-2xl bg-white/[0.05] p-4 text-sm">
+                    AI is thinking...
+                  </div>
+                )}
+
+              </div>
+
+              <div className="mt-5 flex gap-3">
+
+                <input
+                  value={input}
+                  onChange={(e) =>
+                    setInput(e.target.value)
+                  }
+                  placeholder="Ask AI about your palm..."
+                  className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
+                />
+
+                <button
+                  onClick={askAI}
+                  className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground"
+                >
+                  <Sparkles className="size-5" />
+                </button>
+
+              </div>
+
+            </div>
 
           </div>
         </div>
@@ -409,7 +459,7 @@ export default function DashboardPage() {
               onClick={() => setChatOpen(false)}
               className="text-2xl"
             >
-              ×
+              <X className="size-6" />
             </button>
 
           </div>
@@ -428,12 +478,6 @@ export default function DashboardPage() {
                 {message.text}
               </div>
             ))}
-
-            {loading && (
-              <div className="rounded-2xl bg-white/[0.05] p-4 text-sm">
-                AI is thinking...
-              </div>
-            )}
 
           </div>
 
@@ -463,4 +507,4 @@ export default function DashboardPage() {
     </main>
   );
 }
-
+```
