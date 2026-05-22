@@ -168,82 +168,86 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-              <h2 className="mb-5 text-2xl font-semibold">
-                AI Palm Reading
-              </h2>
+         <div className="space-y-6">
 
-              <div className="space-y-5 text-sm leading-7 text-muted-foreground">
+  <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
 
-  {!report && (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      <p className="text-sm text-muted-foreground">
-        Palm reading is still loading...
-      </p>
+    <h2 className="mb-5 text-2xl font-semibold">
+      AI Palm Reading
+    </h2>
+
+    <div className="space-y-5 text-sm leading-7 text-muted-foreground">
+
+      {!report && (
+        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+          <p className="text-sm text-muted-foreground">
+            Palm reading is still loading...
+          </p>
+        </div>
+      )}
+
+      {report?.summary && (
+        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+          <h3 className="mb-3 text-xl font-semibold text-white">
+            Palm Overview
+          </h3>
+
+          <p className="leading-8">
+            {report.summary}
+          </p>
+        </div>
+      )}
+
+      {report?.heart_line?.insight && (
+        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+          <h3 className="mb-3 text-xl font-semibold text-white">
+            Heart Line
+          </h3>
+
+          <p>
+            {report.heart_line.insight}
+          </p>
+        </div>
+      )}
+
+      {report?.head_line?.insight && (
+        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+          <h3 className="mb-3 text-xl font-semibold text-white">
+            Head Line
+          </h3>
+
+          <p>
+            {report.head_line.insight}
+          </p>
+        </div>
+      )}
+
+      {report?.life_line?.insight && (
+        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+          <h3 className="mb-3 text-xl font-semibold text-white">
+            Life Line
+          </h3>
+
+          <p>
+            {report.life_line.insight}
+          </p>
+        </div>
+      )}
+
+      <div className="rounded-3xl border border-yellow-500/20 bg-yellow-500/5 p-4">
+        <p className="mb-2 text-xs uppercase tracking-[0.2em] text-yellow-400">
+          Debug
+        </p>
+
+        <pre className="overflow-auto text-[10px] leading-5 text-yellow-200">
+          {JSON.stringify(report, null, 2)}
+        </pre>
+      </div>
+
     </div>
-  )}
-
-  {report?.summary && (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      <h3 className="mb-3 text-xl font-semibold text-white">
-        Palm Overview
-      </h3>
-
-      <p className="leading-8">
-        {report.summary}
-      </p>
-    </div>
-  )}
-
-  {report?.heart_line?.insight && (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      <h3 className="mb-3 text-xl font-semibold text-white">
-        Heart Line
-      </h3>
-
-      <p>
-        {report.heart_line.insight}
-      </p>
-    </div>
-  )}
-
-  {report?.head_line?.insight && (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      <h3 className="mb-3 text-xl font-semibold text-white">
-        Head Line
-      </h3>
-
-      <p>
-        {report.head_line.insight}
-      </p>
-    </div>
-  )}
-
-  {report?.life_line?.insight && (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      <h3 className="mb-3 text-xl font-semibold text-white">
-        Life Line
-      </h3>
-
-      <p>
-        {report.life_line.insight}
-      </p>
-    </div>
-  )}
-
-  <div className="rounded-3xl border border-yellow-500/20 bg-yellow-500/5 p-4">
-    <p className="mb-2 text-xs uppercase tracking-[0.2em] text-yellow-400">
-      Debug
-    </p>
-
-    <pre className="overflow-auto text-[10px] leading-5 text-yellow-200">
-      {JSON.stringify(report, null, 2)}
-    </pre>
   </div>
 
-</div>
-
+  <div className="hidden lg:block rounded-3xl border border-white/10 bg-white/[0.04] p-5">
             <div className="hidden lg:block rounded-3xl border border-white/10 bg-white/[0.04] p-5">
               <div className="space-y-3 max-h-[300px] overflow-y-auto">
                 {messages.map((message, index) => (
