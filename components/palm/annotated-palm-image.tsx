@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  extractPalmLines,
-  PalmLineOverlay,
-} from "@/lib/palm/extract-palm-lines";
+import { PalmLineOverlay } from "@/lib/palm/extract-palm-lines";
 import { PalmLineOverlayRenderer } from "@/components/palm/palm-line-overlay";
+import { createHandDetector } from "@/lib/palm/detect-hand";
+import { generateGuidedPalmLines } from "@/lib/palm/generate-guided-overlays";
 
 interface PalmLine {
   name: string;
@@ -31,13 +30,27 @@ export function AnnotatedPalmImage({
   });
 
   useEffect(() => {
-    async function runExtraction() {
+    async function detectPalm() {
       if (!imageRef.current) return;
 
       try {
-        const extracted = await extractPalmLines();
+        const detector = await createHandDetector();
 
-        setOverlays(extracted);
+        detector.onResults((results: {
+          multiHandLandmarks?: { x: number; y: number }[][];
+        }) => {
+          const landmarks = results.multiHandLandmarks?.[0];
+
+          if (!landmarks) return;
+
+          const generated = generateGuidedPalmLines(landmarks);
+
+          setOverlays(generated as PalmLineOverlay[]);
+        });
+
+        await detector.send({
+          image: imageRef.current,
+        });
 
         setDimensions({
           width: imageRef.current.naturalWidth || 1000,
@@ -48,7 +61,7 @@ export function AnnotatedPalmImage({
       }
     }
 
-    const timeout = setTimeout(runExtraction, 900);
+    const timeout = setTimeout(detectPalm, 800);
 
     return () => clearTimeout(timeout);
   }, [imageUrl]);
