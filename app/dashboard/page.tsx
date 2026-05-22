@@ -1,10 +1,10 @@
+```tsx
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ArrowRight,
   Clock3,
   Heart,
   Brain,
@@ -14,9 +14,11 @@ import {
   LogOut,
   Home,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { getPalmUpload } from "@/lib/palm-upload-session";
+
 import { useEffect, useState } from "react";
+
+import { getPalmUpload } from "@/lib/palm-upload-session";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const previousReadings = [
   {
@@ -84,6 +86,8 @@ const reportSections = [
 ];
 
 export default function DashboardPage() {
+  const supabase = createClientComponentClient();
+
   const [preview, setPreview] = useState<string | null>(null);
   const [showDrawer, setShowDrawer] = useState(false);
 
@@ -95,12 +99,51 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
-  useEffect(() => {
-    const stored = getPalmUpload();
+  const [readingId, setReadingId] = useState<string | null>(null);
 
-    if (stored) {
-      setPreview(stored);
-    }
+  useEffect(() => {
+    const loadReading = async () => {
+      const stored = getPalmUpload();
+
+      if (stored) {
+        setPreview(stored);
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data: reading } = await supabase
+        .from("palm_readings")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!reading) return;
+
+      setReadingId(reading.id);
+
+      const { data: existingMessages } = await supabase
+        .from("ai_messages")
+        .select("*")
+        .eq("reading_id", reading.id)
+        .order("created_at", { ascending: true });
+
+      if (existingMessages) {
+        setMessages(
+          existingMessages.map((msg) => ({
+            role: msg.role as "user" | "ai",
+            text: msg.content,
+          }))
+        );
+      }
+    };
+
+    loadReading();
   }, []);
 
   const askAI = async () => {
@@ -115,6 +158,14 @@ export default function DashboardPage() {
         text: userMessage,
       },
     ]);
+
+    if (readingId) {
+      await supabase.from("ai_messages").insert({
+        reading_id: readingId,
+        role: "user",
+        content: userMessage,
+      });
+    }
 
     setInput("");
     setLoading(true);
@@ -141,6 +192,15 @@ export default function DashboardPage() {
             "I could not interpret this right now.",
         },
       ]);
+
+      if (readingId && data.answer) {
+        await supabase.from("ai_messages").insert({
+          reading_id: readingId,
+          role: "ai",
+          content: data.answer,
+        });
+      }
+
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -166,25 +226,22 @@ export default function DashboardPage() {
           transition={{ duration: 0.6 }}
           className="relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 shadow-glow backdrop-blur-xl md:p-8"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(197,164,107,0.14),transparent_28rem)]" />
-
           <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
 
-            {/* LEFT */}
             <div className="max-w-3xl">
 
               <div className="mb-5 flex items-center gap-3">
 
                 <button
                   onClick={() => setShowDrawer(true)}
-                  className="grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] transition hover:border-primary/20 hover:bg-primary/10"
+                  className="grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04]"
                 >
                   ☰
                 </button>
 
                 <Link
                   href="/"
-                  className="flex h-12 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 text-sm transition hover:border-primary/20 hover:bg-primary/10"
+                  className="flex h-12 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 text-sm"
                 >
                   <Home className="size-4" />
                   Home
@@ -200,12 +257,8 @@ export default function DashboardPage() {
                 Your emotional energy feels reflective and grounded.
               </h1>
 
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base md:leading-8">
-                Continue exploring your palm reading through reflective AI conversations and previous readings.
-              </p>
             </div>
 
-            {/* RIGHT */}
             <div className="flex flex-row items-center justify-between gap-3 md:flex-col md:items-end">
 
               <div className="rounded-2xl border border-primary/15 bg-primary/10 px-4 py-3">
@@ -218,7 +271,7 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <button className="flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm transition hover:border-red-500/20 hover:bg-red-500/10">
+              <button className="flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm">
                 <LogOut className="size-4" />
                 Logout
               </button>
@@ -227,18 +280,16 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* MAIN GRID */}
         <div className="grid gap-6 xl:grid-cols-[0.78fr_1.22fr]">
 
           {/* LEFT */}
           <div className="space-y-6">
 
-            {/* IMAGE CARD */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-4 shadow-glow backdrop-blur-xl"
+              className="overflow-hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-4"
             >
               <div className="relative aspect-[0.78] overflow-hidden rounded-[1.6rem] border border-white/[0.08] bg-black/30">
                 {preview ? (
@@ -250,27 +301,9 @@ export default function DashboardPage() {
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground">
-                    Upload a palm image to begin your reflective AI journey.
+                    Upload a palm image to begin.
                   </div>
                 )}
-
-                <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-background/20" />
-              </div>
-
-              <div className="mt-5 rounded-[1.6rem] border border-primary/15 bg-primary/10 p-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.24em] text-primary md:text-xs">
-                      Latest Reading
-                    </p>
-
-                    <h2 className="mt-2 text-2xl font-semibold leading-tight">
-                      Quietly Intense & Thoughtful
-                    </h2>
-                  </div>
-
-                  <Clock3 className="size-5 shrink-0 text-primary" />
-                </div>
               </div>
 
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -280,7 +313,7 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={item.title}
-                      className="rounded-[1.3rem] border border-white/[0.08] bg-white/[0.04] p-4 backdrop-blur-xl"
+                      className="rounded-[1.3rem] border border-white/[0.08] bg-white/[0.04] p-4"
                     >
                       <div className="flex items-center gap-2">
                         <div className="grid size-8 place-items-center rounded-xl bg-primary/10 text-primary">
@@ -305,7 +338,6 @@ export default function DashboardPage() {
           {/* RIGHT */}
           <div className="space-y-6">
 
-            {/* REPORT */}
             <div className="space-y-4 md:space-y-5">
               {reportSections.map((section, index) => (
                 <motion.div
@@ -313,31 +345,27 @@ export default function DashboardPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.05 }}
-                  className="overflow-hidden rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-5 shadow-glow backdrop-blur-xl md:p-7"
+                  className="overflow-hidden rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-5"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-xl md:size-12 md:text-2xl">
+                    <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 text-xl">
                       {section.emoji}
                     </div>
 
                     <div className="min-w-0">
-                      <p className="text-[10px] uppercase tracking-[0.22em] text-primary md:text-xs">
-                        Palm Analysis
-                      </p>
-
-                      <h2 className="mt-1 break-words font-display text-2xl leading-tight md:text-3xl">
+                      <h2 className="mt-1 break-words font-display text-2xl leading-tight">
                         {section.title}
                       </h2>
                     </div>
                   </div>
 
-                  <div className="mt-5 rounded-2xl border border-primary/10 bg-primary/5 p-4 md:mt-6 md:p-5">
-                    <p className="text-base italic leading-7 text-foreground/90 md:text-lg md:leading-8">
+                  <div className="mt-5 rounded-2xl border border-primary/10 bg-primary/5 p-4">
+                    <p className="text-base italic leading-7 text-foreground/90">
                       “{section.insight}”
                     </p>
                   </div>
 
-                  <div className="mt-5 space-y-5 text-sm leading-7 text-foreground/90 md:mt-6 md:text-base md:leading-8">
+                  <div className="mt-5 space-y-5 text-sm leading-7 text-foreground/90">
                     {section.text.split("\n\n").map((paragraph) => (
                       <p key={paragraph}>{paragraph}</p>
                     ))}
@@ -348,24 +376,9 @@ export default function DashboardPage() {
 
             {/* DESKTOP CHAT */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="hidden md:block sticky top-4 h-fit rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 shadow-glow backdrop-blur-xl"
+              className="hidden md:block sticky top-4 h-fit rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
-                    AI Palm Conversation
-                  </p>
-
-                  <h2 className="mt-2 font-display text-3xl">
-                    Ask about your reading
-                  </h2>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3 max-h-[320px] overflow-y-auto">
+              <div className="space-y-3 max-h-[320px] overflow-y-auto">
                 {messages.map((message, index) => (
                   <div
                     key={index}
@@ -455,19 +468,13 @@ export default function DashboardPage() {
                 {message.text}
               </div>
             ))}
-
-            {loading && (
-              <div className="rounded-2xl bg-white/[0.05] p-4 text-sm">
-                AI is thinking...
-              </div>
-            )}
           </div>
 
           <div className="mt-5 flex gap-3">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask AI about your palm..."
+              placeholder="Ask AI..."
               className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
             />
 
@@ -480,89 +487,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-
-      {/* DRAWER */}
-      {showDrawer && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowDrawer(false)}
-          />
-
-          <div className="fixed left-0 top-0 z-50 h-full w-[88%] max-w-sm border-r border-white/[0.08] bg-background p-5 shadow-2xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
-                  Palm History
-                </p>
-
-                <h2 className="mt-2 text-3xl font-semibold">
-                  Previous Readings
-                </h2>
-              </div>
-
-              <button
-                onClick={() => setShowDrawer(false)}
-                className="text-2xl"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="mt-8 space-y-3">
-
-              <Link
-                href="/"
-                className="flex items-center justify-between rounded-[1.5rem] border border-white/[0.08] bg-white/[0.04] p-4 transition hover:border-primary/20 hover:bg-primary/10"
-              >
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
-                    Navigation
-                  </p>
-
-                  <p className="mt-2 text-sm">
-                    Go To Home
-                  </p>
-                </div>
-
-                <Home className="size-4" />
-              </Link>
-
-              <Link
-                href="/"
-                className="flex items-center justify-between rounded-[1.5rem] border border-white/[0.08] bg-white/[0.04] p-4 transition hover:border-primary/20 hover:bg-primary/10"
-              >
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
-                    Palm Upload
-                  </p>
-
-                  <p className="mt-2 text-sm">
-                    Upload New Palm
-                  </p>
-                </div>
-
-                <Upload className="size-4" />
-              </Link>
-
-              {previousReadings.map((item) => (
-                <button
-                  key={item.date}
-                  className="w-full rounded-[1.5rem] border border-white/[0.08] bg-white/[0.04] p-4 text-left transition hover:border-primary/20 hover:bg-primary/10"
-                >
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
-                    {item.date}
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-foreground/90">
-                    {item.title}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
     </main>
   );
 }
+```
