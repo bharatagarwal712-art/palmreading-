@@ -81,9 +81,9 @@ export default function ResultsPage() {
           ascending: false,
         })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      console.log("PALM REPORT:", data, error);
+      console.log("REPORT FETCH:", data, error);
 
       if (data) {
         setReport(data as Reading);
