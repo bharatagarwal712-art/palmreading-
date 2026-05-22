@@ -1,4 +1,5 @@
 export const PALM_UPLOAD_STORAGE_KEY = "palm_upload_preview";
+export const PALM_REPORT_STORAGE_KEY = "palm_generated_report";
 
 export async function savePalmUpload(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -24,6 +25,18 @@ export async function savePalmUpload(file: File) {
   });
 }
 
+export function savePalmReport(report: string) {
+  if (typeof window === "undefined") return;
+
+  sessionStorage.setItem(PALM_REPORT_STORAGE_KEY, report);
+}
+
+export function getPalmReport() {
+  if (typeof window === "undefined") return null;
+
+  return sessionStorage.getItem(PALM_REPORT_STORAGE_KEY);
+}
+
 export function getPalmUpload() {
   if (typeof window === "undefined") return null;
 
@@ -34,4 +47,10 @@ export function clearPalmUpload() {
   if (typeof window === "undefined") return;
 
   sessionStorage.removeItem(PALM_UPLOAD_STORAGE_KEY);
+}
+
+export function clearPalmReport() {
+  if (typeof window === "undefined") return;
+
+  sessionStorage.removeItem(PALM_REPORT_STORAGE_KEY);
 }
