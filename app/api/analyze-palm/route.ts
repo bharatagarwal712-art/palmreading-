@@ -36,6 +36,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const base64Data = imageUrl.replace(
+      /^data:image\/\w+;base64,/, 
+      ""
+    );
+
+    const imageBytes = Buffer.from(base64Data, "base64");
+
     const validationPrompt = `You are a STRICT palm validator.
 
 Your ONLY task is to determine whether the uploaded image contains:
@@ -74,10 +81,7 @@ INVALID:
 {
   "valid": false,
   "reason": "No clear human palm detected"
-}
-
-Image URL:
-${imageUrl}`;
+}`;
 
     const validationCommand = new ConverseCommand({
       modelId: "amazon.nova-lite-v1:0",
@@ -87,6 +91,14 @@ ${imageUrl}`;
           content: [
             {
               text: validationPrompt,
+            },
+            {
+              image: {
+                format: "jpeg",
+                source: {
+                  bytes: imageBytes,
+                },
+              },
             },
           ],
         },
@@ -153,10 +165,7 @@ Rules:
 - conversational tone
 - no philosophy
 - no dangerous predictions
-- no fake certainty
-
-Palm Image URL:
-${imageUrl}`;
+- no fake certainty`;
 
     const command = new ConverseCommand({
       modelId: "amazon.nova-lite-v1:0",
@@ -166,6 +175,14 @@ ${imageUrl}`;
           content: [
             {
               text: prompt,
+            },
+            {
+              image: {
+                format: "jpeg",
+                source: {
+                  bytes: imageBytes,
+                },
+              },
             },
           ],
         },
