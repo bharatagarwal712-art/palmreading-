@@ -3,6 +3,7 @@ import {
   BedrockRuntimeClient,
   ConverseCommand,
 } from "@aws-sdk/client-bedrock-runtime";
+import { createClient } from "@supabase/supabase-js";
 
 const client = new BedrockRuntimeClient({
   region: process.env.AWS_REGION || "us-east-1",
@@ -12,11 +13,16 @@ const client = new BedrockRuntimeClient({
   },
 });
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ""
+);
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { imageUrl } = body;
+    const { imageUrl, userId } = body;
 
     if (!imageUrl) {
       return NextResponse.json(
@@ -26,7 +32,7 @@ export async function POST(request: NextRequest) {
         },
         {
           status: 400,
-        },
+        }
       );
     }
 
@@ -115,7 +121,7 @@ ${imageUrl}`;
         },
         {
           status: 400,
-        },
+        }
       );
     }
 
@@ -202,6 +208,16 @@ ${imageUrl}`;
       };
     }
 
+    if (userId) {
+      await supabase.from("palm_readings").insert({
+        user_id: userId,
+        summary: parsed.summary,
+        heart_line: parsed.heart_line,
+        head_line: parsed.head_line,
+        life_line: parsed.life_line,
+      });
+    }
+
     return NextResponse.json({
       success: true,
       analysis: parsed,
@@ -216,7 +232,7 @@ ${imageUrl}`;
       },
       {
         status: 500,
-      },
+      }
     );
   }
 }
