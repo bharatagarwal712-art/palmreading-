@@ -70,9 +70,18 @@ export default function ProcessingPage() {
 
         clearInterval(interval);
 
-        setTimeout(() => {
-          window.location.href = "/results";
-        }, 1600);
+        if (data.success) {
+          setTimeout(() => {
+            window.location.href = "/results";
+          }, 1600);
+        } else {
+          console.error(data);
+
+          alert(
+            data.error ||
+              "Palm analysis failed. Please try again."
+          );
+        }
       } catch (error) {
         console.error(error);
       }
