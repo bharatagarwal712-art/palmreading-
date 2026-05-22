@@ -59,7 +59,6 @@ const highlights = [
 
 export default function DashboardPage() {
   const [preview, setPreview] = useState<string | null>(null);
-
   const [messages, setMessages] = useState<
     {
       role: "user" | "ai";
@@ -69,16 +68,10 @@ export default function DashboardPage() {
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [chatOpen, setChatOpen] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
-
-  const [readingId, setReadingId] = useState<string | null>(
-    null
-  );
-
+  const [readingId, setReadingId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState("");
-
   const [report, setReport] = useState<Reading | null>(null);
 
   useEffect(() => {
@@ -110,7 +103,6 @@ export default function DashboardPage() {
       const latestReading = readings[0] as Reading;
 
       setReadingId(latestReading.id);
-
       setReport(latestReading);
 
       const { data: existingMessages } = await supabase
@@ -150,14 +142,6 @@ export default function DashboardPage() {
     setInput("");
     setLoading(true);
 
-    if (readingId) {
-      await supabase.from("ai_messages").insert({
-        reading_id: readingId,
-        role: "user",
-        content: userMessage,
-      });
-    }
-
     try {
       const response = await fetch("/api/palm-chat", {
         method: "POST",
@@ -171,25 +155,15 @@ export default function DashboardPage() {
 
       const data = await response.json();
 
-      const aiReply =
-        data.answer ||
-        "I could not interpret this right now.";
-
       setMessages((prev) => [
         ...prev,
         {
           role: "ai",
-          text: aiReply,
+          text:
+            data.answer ||
+            "I could not interpret this right now.",
         },
       ]);
-
-      if (readingId) {
-        await supabase.from("ai_messages").insert({
-          reading_id: readingId,
-          role: "ai",
-          content: aiReply,
-        });
-      }
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -205,7 +179,6 @@ export default function DashboardPage() {
 
   const logout = async () => {
     await supabase.auth.signOut();
-
     window.location.href = "/";
   };
 
@@ -213,14 +186,8 @@ export default function DashboardPage() {
     <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-40 md:px-6 md:py-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 backdrop-blur-xl"
         >
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
@@ -333,42 +300,6 @@ export default function DashboardPage() {
                       {report.summary}
                     </p>
                   )}
-
-                  {report?.heart_line?.insight && (
-                    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
-                      <h3 className="mb-2 text-lg font-semibold">
-                        Heart Line
-                      </h3>
-
-                      <p className="leading-8 text-muted-foreground">
-                        {report.heart_line.insight}
-                      </p>
-                    </div>
-                  )}
-
-                  {report?.head_line?.insight && (
-                    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
-                      <h3 className="mb-2 text-lg font-semibold">
-                        Head Line
-                      </h3>
-
-                      <p className="leading-8 text-muted-foreground">
-                        {report.head_line.insight}
-                      </p>
-                    </div>
-                  )}
-
-                  {report?.life_line?.insight && (
-                    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
-                      <h3 className="mb-2 text-lg font-semibold">
-                        Life Line
-                      </h3>
-
-                      <p className="leading-8 text-muted-foreground">
-                        {report.life_line.insight}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -387,20 +318,12 @@ export default function DashboardPage() {
                     {message.text}
                   </div>
                 ))}
-
-                {loading && (
-                  <div className="rounded-2xl bg-white/[0.05] p-4 text-sm">
-                    AI is thinking...
-                  </div>
-                )}
               </div>
 
               <div className="mt-5 flex gap-3">
                 <input
                   value={input}
-                  onChange={(e) =>
-                    setInput(e.target.value)
-                  }
+                  onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask AI about your palm..."
                   className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
                 />
@@ -427,16 +350,64 @@ export default function DashboardPage() {
             Ask AI
           </button>
         )}
+
+        {chatOpen && (
+          <div className="fixed inset-0 z-[80] bg-background p-5">
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">
+                Ask AI
+              </h2>
+
+              <button
+                onClick={() => setChatOpen(false)}
+                className="grid size-11 place-items-center rounded-2xl border border-white/[0.08]"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-[65vh] overflow-y-auto">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`rounded-2xl p-4 text-sm leading-7 ${
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-white/[0.05]"
+                  }`}
+                >
+                  {message.text}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5 flex gap-3">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask AI about your palm..."
+                className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
+              />
+
+              <button
+                onClick={askAI}
+                className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground"
+              >
+                <Sparkles className="size-5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {showDrawer && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
             onClick={() => setShowDrawer(false)}
           />
 
-          <div className="fixed left-0 top-0 z-50 h-full w-[88%] max-w-sm border-r border-white/[0.08] bg-background p-5 shadow-2xl">
+          <div className="fixed left-0 top-0 z-[70] h-full w-[88%] max-w-sm border-r border-white/[0.08] bg-background p-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
