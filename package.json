@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.821.0",
+    "@mediapipe/camera_utils": "^0.3.1675466862",
+    "@mediapipe/hands": "^0.4.1675469240",
     "@radix-ui/react-slot": "^1.1.2",
     "@supabase/supabase-js": "^2.49.1",
     "class-variance-authority": "^0.7.1",
