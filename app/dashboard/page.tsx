@@ -26,18 +26,36 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-type Highlight = {
-  title: string;
-  text: string;
+type PalmLine = {
+  insight?: string;
+  path?: string;
 };
 
 type Reading = {
   id: string;
-  result?: string;
-  highlights?: Highlight[];
+  summary?: string;
+  heart_line?: PalmLine;
+  head_line?: PalmLine;
+  life_line?: PalmLine;
 };
 
-const highlightIcons = [Heart, Brain, TrendingUp];
+const highlights = [
+  {
+    icon: Heart,
+    title: "Emotionally Deep",
+    text: "You process emotions deeply but reveal them selectively.",
+  },
+  {
+    icon: Brain,
+    title: "Reflective Thinker",
+    text: "You naturally analyze situations before reacting.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Quietly Ambitious",
+    text: "You grow steadily through consistency and patience.",
+  },
+];
 
 export default function DashboardPage() {
   const [preview, setPreview] = useState<string | null>(null);
@@ -190,22 +208,6 @@ export default function DashboardPage() {
     window.location.href = "/";
   };
 
-  const highlights =
-    report?.highlights?.length
-      ? report.highlights.map(
-          (
-            item: Highlight,
-            index: number
-          ) => ({
-            ...item,
-            icon:
-              highlightIcons[
-                index % highlightIcons.length
-              ],
-          })
-        )
-      : [];
-
   return (
     <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-40 md:px-6 md:py-8">
       <div className="mx-auto max-w-7xl space-y-6">
@@ -321,19 +323,48 @@ export default function DashboardPage() {
                   AI Palm Analysis
                 </p>
 
-                <div className="mt-6 space-y-6 text-sm leading-8 text-foreground/90 md:text-base">
-                  {report?.result
-                    ?.split("\n\n")
-                    .map(
-                      (
-                        paragraph: string,
-                        index: number
-                      ) => (
-                        <p key={index}>
-                          {paragraph}
-                        </p>
-                      )
-                    )}
+                <div className="mt-6 space-y-6">
+                  {report?.summary && (
+                    <p className="text-base leading-8 text-foreground/90">
+                      {report.summary}
+                    </p>
+                  )}
+
+                  {report?.heart_line?.insight && (
+                    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
+                      <h3 className="mb-2 text-lg font-semibold">
+                        Heart Line
+                      </h3>
+
+                      <p className="leading-8 text-muted-foreground">
+                        {report.heart_line.insight}
+                      </p>
+                    </div>
+                  )}
+
+                  {report?.head_line?.insight && (
+                    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
+                      <h3 className="mb-2 text-lg font-semibold">
+                        Head Line
+                      </h3>
+
+                      <p className="leading-8 text-muted-foreground">
+                        {report.head_line.insight}
+                      </p>
+                    </div>
+                  )}
+
+                  {report?.life_line?.insight && (
+                    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5">
+                      <h3 className="mb-2 text-lg font-semibold">
+                        Life Line
+                      </h3>
+
+                      <p className="leading-8 text-muted-foreground">
+                        {report.life_line.insight}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
