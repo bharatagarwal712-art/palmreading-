@@ -71,6 +71,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
 
   const [chatOpen, setChatOpen] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
 
   const [readingId, setReadingId] = useState<string | null>(
     null
@@ -225,7 +226,10 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div>
               <div className="mb-5 flex items-center gap-3">
-                <button className="grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04]">
+                <button
+                  onClick={() => setShowDrawer(true)}
+                  className="grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04]"
+                >
                   <Menu className="size-5" />
                 </button>
 
@@ -369,7 +373,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            <div className="hidden rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 md:block sticky top-4">
+            <div className="block rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 sticky top-4">
               <div className="space-y-3 max-h-[340px] overflow-y-auto">
                 {messages.map((message, index) => (
                   <div
@@ -423,61 +427,55 @@ export default function DashboardPage() {
             Ask AI
           </button>
         )}
-
-        <div
-          className={`fixed bottom-0 left-0 right-0 z-50 rounded-t-[2rem] border border-white/[0.08] bg-background p-5 shadow-2xl transition-transform duration-300 ${
-            chatOpen
-              ? "translate-y-0"
-              : "translate-y-full"
-          }`}
-        >
-          <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">
-              Ask AI
-            </h2>
-
-            <button
-              onClick={() => setChatOpen(false)}
-              className="text-2xl"
-            >
-              <X className="size-6" />
-            </button>
-          </div>
-
-          <div className="space-y-3 max-h-[300px] overflow-y-auto">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`rounded-2xl p-4 text-sm leading-7 ${
-                  message.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-white/[0.05]"
-                }`}
-              >
-                {message.text}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-5 flex gap-3">
-            <input
-              value={input}
-              onChange={(e) =>
-                setInput(e.target.value)
-              }
-              placeholder="Ask AI about your palm..."
-              className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
-            />
-
-            <button
-              onClick={askAI}
-              className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground"
-            >
-              <Sparkles className="size-5" />
-            </button>
-          </div>
-        </div>
       </div>
+
+      {showDrawer && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowDrawer(false)}
+          />
+
+          <div className="fixed left-0 top-0 z-50 h-full w-[88%] max-w-sm border-r border-white/[0.08] bg-background p-5 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
+                  Palm History
+                </p>
+
+                <h2 className="mt-2 text-2xl font-semibold">
+                  Navigation
+                </h2>
+              </div>
+
+              <button
+                onClick={() => setShowDrawer(false)}
+                className="grid size-11 place-items-center rounded-2xl border border-white/[0.08]"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <div className="mt-8 space-y-3">
+              <Link
+                href="/"
+                className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-4"
+              >
+                <Home className="size-5" />
+                <span>Home</span>
+              </Link>
+
+              <Link
+                href="/upload"
+                className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-4"
+              >
+                <Sparkles className="size-5" />
+                <span>Upload New Palm</span>
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
     </main>
   );
 }
