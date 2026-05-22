@@ -30,22 +30,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validationPrompt = `You are validating whether an uploaded image contains a clearly visible human palm.
+    const validationPrompt = `You are a STRICT palm validator.
 
-Return STRICT JSON ONLY.
+Your ONLY task is to determine whether the uploaded image contains:
+- a REAL HUMAN PALM
+- front-facing palm
+- visible palm lines
+- suitable image for palm reading
 
-If the image contains a visible human palm suitable for palm reading:
+You MUST reject:
+- bottles
+- cups
+- random objects
+- tables
+- landscapes
+- pets
+- faces
+- side-hand photos
+- closed fists
+- fingers only
+- blurred images
+- dark images
+- AI generated images
+- drawings
+- cartoons
+
+If you are not completely certain the image contains a clear human palm, mark it invalid.
+
+Return ONLY JSON.
+
+VALID:
 {
   "valid": true
 }
 
-If the image does not contain a palm:
+INVALID:
 {
   "valid": false,
-  "reason": "No visible human palm detected"
+  "reason": "No clear human palm detected"
 }
-
-Do not hallucinate.
 
 Image URL:
 ${imageUrl}`;
@@ -63,9 +86,9 @@ ${imageUrl}`;
         },
       ],
       inferenceConfig: {
-        maxTokens: 200,
-        temperature: 0.1,
-        topP: 0.8,
+        maxTokens: 100,
+        temperature: 0,
+        topP: 0.1,
       },
     });
 
@@ -84,11 +107,11 @@ ${imageUrl}`;
       };
     }
 
-    if (!validation.valid) {
+    if (validation.valid !== true) {
       return NextResponse.json(
         {
           success: false,
-          error: "Please upload a clear image of a human palm.",
+          error: "Please upload a clear photo of a real human palm.",
         },
         {
           status: 400,
@@ -98,7 +121,7 @@ ${imageUrl}`;
 
     const prompt = `You are an emotionally intelligent AI palm reader.
 
-Analyze the uploaded palm image.
+Analyze ONLY the visible palm.
 
 Return STRICT JSON ONLY.
 
@@ -119,10 +142,12 @@ Required format:
   "summary": "string"
 }
 
-Generate believable SVG paths for overlay animation.
-Keep the tone human, conversational, emotionally intelligent, and concise.
-Avoid philosophical language.
-Avoid dangerous predictions.
+Rules:
+- concise responses
+- conversational tone
+- no philosophy
+- no dangerous predictions
+- no fake certainty
 
 Palm Image URL:
 ${imageUrl}`;
@@ -140,8 +165,8 @@ ${imageUrl}`;
         },
       ],
       inferenceConfig: {
-        maxTokens: 1200,
-        temperature: 0.7,
+        maxTokens: 1000,
+        temperature: 0.6,
         topP: 0.9,
       },
     });
@@ -174,7 +199,6 @@ ${imageUrl}`;
         },
         summary:
           "Your palm reflects emotional depth, balanced thinking, and resilient energy.",
-        raw: text,
       };
     }
 
