@@ -9,21 +9,14 @@ import {
   Heart,
   Brain,
   Sparkles,
-  Stars,
   TrendingUp,
   Upload,
+  LogOut,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPalmUpload } from "@/lib/palm-upload-session";
 import { useEffect, useState } from "react";
-
-const aiQuestions = [
-  "Why do I emotionally withdraw sometimes?",
-  "What kind of work suits my personality?",
-  "What hidden strength stands out in my reading?",
-  "Why do I overthink emotionally?",
-  "What relationship pattern repeats for me?",
-];
 
 const previousReadings = [
   {
@@ -92,8 +85,14 @@ const reportSections = [
 
 export default function DashboardPage() {
   const [preview, setPreview] = useState<string | null>(null);
-  const [questionCount] = useState(5);
   const [showDrawer, setShowDrawer] = useState(false);
+
+  const [messages, setMessages] = useState<
+    { role: "user" | "ai"; text: string }[]
+  >([]);
+
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
@@ -104,8 +103,60 @@ export default function DashboardPage() {
     }
   }, []);
 
+  const askAI = async () => {
+    if (!input.trim() || loading) return;
+
+    const userMessage = input;
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        text: userMessage,
+      },
+    ]);
+
+    setInput("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/palm-chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: userMessage,
+        }),
+      });
+
+      const data = await response.json();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          text:
+            data.answer ||
+            "I could not interpret this right now.",
+        },
+      ]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          text:
+            "Something went wrong while contacting AI.",
+        },
+      ]);
+    }
+
+    setLoading(false);
+  };
+
   return (
-    <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-36 md:px-6 md:py-8">
+    <main className="min-h-screen overflow-x-hidden bg-background px-4 py-5 pb-40 md:px-6 md:py-8">
       <div className="mx-auto max-w-7xl space-y-6">
 
         {/* HERO */}
@@ -117,15 +168,29 @@ export default function DashboardPage() {
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(197,164,107,0.14),transparent_28rem)]" />
 
-          <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+
+            {/* LEFT */}
             <div className="max-w-3xl">
 
-              <button
-                onClick={() => setShowDrawer(true)}
-                className="mb-4 grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] transition hover:border-primary/20 hover:bg-primary/10"
-              >
-                ☰
-              </button>
+              <div className="mb-5 flex items-center gap-3">
+
+                <button
+                  onClick={() => setShowDrawer(true)}
+                  className="grid size-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] transition hover:border-primary/20 hover:bg-primary/10"
+                >
+                  ☰
+                </button>
+
+                <Link
+                  href="/"
+                  className="flex h-12 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 text-sm transition hover:border-primary/20 hover:bg-primary/10"
+                >
+                  <Home className="size-4" />
+                  Home
+                </Link>
+
+              </div>
 
               <p className="text-[10px] uppercase tracking-[0.28em] text-primary md:text-xs">
                 AI Palm Reflection
@@ -140,12 +205,25 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <Button asChild size="lg" className="w-full lg:w-[220px]">
-              <Link href="/">
-                <Upload className="size-4" />
-                Upload New Palm
-              </Link>
-            </Button>
+            {/* RIGHT */}
+            <div className="flex flex-row items-center justify-between gap-3 md:flex-col md:items-end">
+
+              <div className="rounded-2xl border border-primary/15 bg-primary/10 px-4 py-3">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-primary">
+                  Signed In
+                </p>
+
+                <p className="mt-1 text-sm font-medium">
+                  user@gmail.com
+                </p>
+              </div>
+
+              <button className="flex items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-sm transition hover:border-red-500/20 hover:bg-red-500/10">
+                <LogOut className="size-4" />
+                Logout
+              </button>
+
+            </div>
           </div>
         </motion.div>
 
@@ -222,7 +300,6 @@ export default function DashboardPage() {
                 })}
               </div>
             </motion.div>
-
           </div>
 
           {/* RIGHT */}
@@ -276,33 +353,53 @@ export default function DashboardPage() {
               transition={{ duration: 0.7, delay: 0.3 }}
               className="hidden md:block sticky top-4 h-fit rounded-[2rem] border border-white/[0.08] bg-white/[0.04] p-6 shadow-glow backdrop-blur-xl"
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary md:text-xs">
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
                     AI Palm Conversation
                   </p>
 
-                  <h2 className="mt-2 font-display text-3xl leading-tight md:text-4xl">
+                  <h2 className="mt-2 font-display text-3xl">
                     Ask about your reading
                   </h2>
                 </div>
-
-                <div className="rounded-full border border-primary/15 bg-primary/10 px-4 py-2 text-xs text-primary">
-                  {questionCount} of 5 questions remaining
-                </div>
               </div>
 
-              <div className="mt-8 border-t border-white/[0.06] pt-5">
-                <div className="flex gap-3">
-                  <input
-                    placeholder="Ask AI about your palm reading..."
-                    className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
-                  />
+              <div className="mt-6 space-y-3 max-h-[320px] overflow-y-auto">
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`rounded-2xl p-4 text-sm leading-7 ${
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-white/[0.05]"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                ))}
 
-                  <button className="grid size-14 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
-                    <Sparkles className="size-5" />
-                  </button>
-                </div>
+                {loading && (
+                  <div className="rounded-2xl bg-white/[0.05] p-4 text-sm">
+                    AI is thinking...
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask AI about your palm reading..."
+                  className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
+                />
+
+                <button
+                  onClick={askAI}
+                  className="grid size-14 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground"
+                >
+                  <Sparkles className="size-5" />
+                </button>
               </div>
             </motion.div>
 
@@ -310,7 +407,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* MOBILE FLOATING CHAT */}
+      {/* MOBILE CHAT */}
       <div className="md:hidden">
         {!chatOpen && (
           <button
@@ -333,15 +430,9 @@ export default function DashboardPage() {
           }`}
         >
           <div className="mb-5 flex items-center justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
-                AI Palm Conversation
-              </p>
-
-              <h2 className="mt-1 text-2xl font-semibold">
-                Ask AI
-              </h2>
-            </div>
+            <h2 className="text-2xl font-semibold">
+              Ask AI
+            </h2>
 
             <button
               onClick={() => setChatOpen(false)}
@@ -351,13 +442,39 @@ export default function DashboardPage() {
             </button>
           </div>
 
+          <div className="space-y-3 max-h-[240px] overflow-y-auto">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`rounded-2xl p-4 text-sm leading-7 ${
+                  message.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-white/[0.05]"
+                }`}
+              >
+                {message.text}
+              </div>
+            ))}
+
+            {loading && (
+              <div className="rounded-2xl bg-white/[0.05] p-4 text-sm">
+                AI is thinking...
+              </div>
+            )}
+          </div>
+
           <div className="mt-5 flex gap-3">
             <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
               placeholder="Ask AI about your palm..."
               className="h-14 flex-1 rounded-2xl border border-white/[0.08] bg-black/20 px-5 text-sm outline-none"
             />
 
-            <button className="grid size-14 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
+            <button
+              onClick={askAI}
+              className="grid size-14 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground"
+            >
               <Sparkles className="size-5" />
             </button>
           </div>
@@ -393,6 +510,41 @@ export default function DashboardPage() {
             </div>
 
             <div className="mt-8 space-y-3">
+
+              <Link
+                href="/"
+                className="flex items-center justify-between rounded-[1.5rem] border border-white/[0.08] bg-white/[0.04] p-4 transition hover:border-primary/20 hover:bg-primary/10"
+              >
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
+                    Navigation
+                  </p>
+
+                  <p className="mt-2 text-sm">
+                    Go To Home
+                  </p>
+                </div>
+
+                <Home className="size-4" />
+              </Link>
+
+              <Link
+                href="/"
+                className="flex items-center justify-between rounded-[1.5rem] border border-white/[0.08] bg-white/[0.04] p-4 transition hover:border-primary/20 hover:bg-primary/10"
+              >
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-primary">
+                    Palm Upload
+                  </p>
+
+                  <p className="mt-2 text-sm">
+                    Upload New Palm
+                  </p>
+                </div>
+
+                <Upload className="size-4" />
+              </Link>
+
               {previousReadings.map((item) => (
                 <button
                   key={item.date}
