@@ -65,6 +65,41 @@ export default function ResultsPage() {
         setPreview(stored);
       }
 
+      // LOAD INSTANTLY FROM SESSION STORAGE
+      const storedAnalysis =
+        sessionStorage.getItem("palm_analysis");
+
+      if (storedAnalysis) {
+        try {
+          const parsed = JSON.parse(storedAnalysis);
+
+          setReport({
+            id: "session-report",
+            summary: parsed.summary,
+            heart_line:
+              typeof parsed.heart_line === "string"
+                ? JSON.parse(parsed.heart_line)
+                : parsed.heart_line,
+            head_line:
+              typeof parsed.head_line === "string"
+                ? JSON.parse(parsed.head_line)
+                : parsed.head_line,
+            life_line:
+              typeof parsed.life_line === "string"
+                ? JSON.parse(parsed.life_line)
+                : parsed.life_line,
+          });
+
+          return;
+        } catch (error) {
+          console.error(
+            "SESSION PARSE ERROR:",
+            error
+          );
+        }
+      }
+
+      // FALLBACK TO SUPABASE
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -85,23 +120,23 @@ export default function ResultsPage() {
 
       console.log("REPORT FETCH:", data, error);
 
-     if (data) {
-  setReport({
-    ...data,
-    heart_line:
-      typeof data.heart_line === "string"
-        ? JSON.parse(data.heart_line)
-        : data.heart_line,
-    head_line:
-      typeof data.head_line === "string"
-        ? JSON.parse(data.head_line)
-        : data.head_line,
-    life_line:
-      typeof data.life_line === "string"
-        ? JSON.parse(data.life_line)
-        : data.life_line,
-  } as Reading);
-}
+      if (data) {
+        setReport({
+          ...data,
+          heart_line:
+            typeof data.heart_line === "string"
+              ? JSON.parse(data.heart_line)
+              : data.heart_line,
+          head_line:
+            typeof data.head_line === "string"
+              ? JSON.parse(data.head_line)
+              : data.head_line,
+          life_line:
+            typeof data.life_line === "string"
+              ? JSON.parse(data.life_line)
+              : data.life_line,
+        } as Reading);
+      }
     };
 
     load();
@@ -161,11 +196,11 @@ export default function ResultsPage() {
 
   return (
     <main className="min-h-screen bg-background px-4 py-5 pb-36 md:px-6">
-
       <div className="mx-auto max-w-7xl space-y-6">
 
-        <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+        {/* TOP BAR */}
 
+        <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
 
             <div className="flex items-center gap-3">
@@ -207,10 +242,13 @@ export default function ResultsPage() {
             </div>
 
           </div>
-
         </div>
 
+        {/* MAIN GRID */}
+
         <div className="grid gap-6 xl:grid-cols-[0.78fr_1.22fr]">
+
+          {/* LEFT SIDE */}
 
           <div className="space-y-6">
 
@@ -236,6 +274,8 @@ export default function ResultsPage() {
             </div>
 
           </div>
+
+          {/* RIGHT SIDE */}
 
           <div className="space-y-6">
 
@@ -327,50 +367,12 @@ export default function ResultsPage() {
               </div>
             )}
 
-            <div className="hidden xl:block rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 sticky top-5">
-
-              <div className="space-y-3 max-h-[350px] overflow-y-auto">
-
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`rounded-2xl p-4 text-sm leading-7 ${
-                      message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-white/5"
-                    }`}
-                  >
-                    {message.text}
-                  </div>
-                ))}
-
-              </div>
-
-              <div className="mt-5 flex gap-3">
-
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask AI about your palm..."
-                  className="h-14 flex-1 rounded-2xl border border-white/10 bg-black/20 px-5 text-sm outline-none"
-                />
-
-                <button
-                  onClick={askAI}
-                  className="grid h-14 w-14 place-items-center rounded-2xl bg-primary text-primary-foreground"
-                >
-                  <Sparkles className="h-5 w-5" />
-                </button>
-
-              </div>
-
-            </div>
-
           </div>
 
         </div>
-
       </div>
+
+      {/* MOBILE CHAT BUTTON */}
 
       {!chatOpen && (
         <button
@@ -381,6 +383,8 @@ export default function ResultsPage() {
           Ask AI
         </button>
       )}
+
+      {/* MOBILE CHAT */}
 
       {chatOpen && (
         <div className="fixed inset-0 z-[130] bg-background p-5 xl:hidden">
@@ -438,9 +442,10 @@ export default function ResultsPage() {
         </div>
       )}
 
+      {/* DRAWER */}
+
       {showDrawer && (
         <>
-
           <div
             className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
             onClick={() => setShowDrawer(false)}
@@ -482,10 +487,8 @@ export default function ResultsPage() {
             </div>
 
           </div>
-
         </>
       )}
-
     </main>
   );
 }
