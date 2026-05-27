@@ -60,71 +60,61 @@ You are an expert palm analyst and psychologically insightful palm reader.
 
 Carefully analyze ONLY visible features from the uploaded palm image.
 
-FIRST:
-Observe physical palm characteristics.
-
-Look for:
-- heart line shape and depth
-- head line shape and clarity
-- life line curvature and continuity
-- fate line visibility
-- sun line visibility
-- line sharpness
-- forks or breaks
-- palm width and shape
-- finger proportions
-- finger spacing
-- thumb flexibility
-- mounts prominence
-- texture and fine lines
-- emotional vs logical dominance
-- unusual markings or asymmetry
-
-SECOND:
-Infer personality tendencies and emotional patterns BASED on those observations.
-
 IMPORTANT:
-- make the reading feel highly personal
+- make the reading feel deeply personal
 - explain WHY you inferred something
-- reference visible features frequently
+- reference visible features naturally
 - avoid generic horoscope language
 - avoid mystical wording
 - avoid fake future predictions
-- focus on tendencies, psychology, emotional style, motivation, resilience, communication, and decision-making
+- focus on emotional tendencies, thinking patterns, resilience, ambition, communication, relationships, and decision-making
 - sound emotionally intelligent and observational
 - avoid repetition
+- write with warmth and depth
+
+The summary MUST:
+- feel emotionally intelligent
+- feel highly personal
+- explain behavioral tendencies
+- connect multiple palm features together
+- be minimum 6 sentences
+- never return placeholder text
+
+For heart_line, head_line and life_line insights:
+- write detailed 4-6 sentence interpretations
+- explain personality tendencies and emotional patterns
+- explain interpersonal behavior and internal conflicts
+- explain strengths and subtle behavioral nuances
+- avoid short generic statements
 
 Return STRICT JSON ONLY.
 
 Required JSON format:
 {
-  "observations": [
-    "Visible palm observations"
-  ],
-  "summary": "Detailed psychological summary",
+  "summary": "Write a deeply personal 6-8 sentence psychological overview combining emotional tendencies, thinking style, resilience, ambition, interpersonal behavior, and overall personality patterns inferred from the palm.",
   "heart_line": {
     "physical_traits": "Visible physical characteristics",
-    "insight": "Emotional interpretation",
-    "strength_score": 0
+    "insight": "Write a deeply detailed 4-6 sentence emotional and interpersonal interpretation.",
+    "strength_score": 78
   },
   "head_line": {
     "physical_traits": "Visible physical characteristics",
-    "insight": "Mental/personality interpretation",
-    "strength_score": 0
+    "insight": "Write a deeply detailed 4-6 sentence mental and personality interpretation.",
+    "strength_score": 84
   },
   "life_line": {
     "physical_traits": "Visible physical characteristics",
-    "insight": "Grounding/vitality interpretation",
-    "strength_score": 0
+    "insight": "Write a deeply detailed 4-6 sentence grounding and resilience interpretation.",
+    "strength_score": 81
   },
   "pattern_synthesis": {
     "insight": "Combined interpretation from multiple palm features"
   },
   "personality_profile": {
-    "emotional_style": "",
-    "decision_style": "",
-    "social_energy": "",
-    "stress_response": ""
+    "emotional_style": "Detailed emotional behavior profile",
+    "decision_style": "Detailed decision making profile",
+    "social_energy": "Detailed social behavior profile",
+    "stress_response": "Detailed stress handling profile"
   }
 }
 `;
@@ -150,8 +140,8 @@ Required JSON format:
         },
       ],
       inferenceConfig: {
-        maxTokens: 1800,
-        temperature: 0.65,
+        maxTokens: 2200,
+        temperature: 0.7,
         topP: 0.9,
       },
     });
@@ -181,43 +171,38 @@ Required JSON format:
       console.error("RAW MODEL RESPONSE:", text);
 
       parsed = {
-        observations: [
-          "The major palm lines appear moderately defined with balanced spacing.",
-          "The palm structure suggests a blend of emotional sensitivity and analytical thinking.",
-          "Fine secondary lines indicate reflective thinking and emotional depth."
-        ],
         summary:
-          "Your palm suggests someone who tends to balance emotional awareness with practical thinking rather than operating from extremes. The visible line structure points toward internal reflection, emotional depth, and a preference for meaningful stability over impulsive behavior. There are also indications of adaptability and gradual personal growth through experience.",
+          "Your palm reflects a personality that tends to balance emotional awareness with practical thinking rather than operating from extremes. The visible structure of the major lines suggests someone who prefers stability, internal reflection, and meaningful long-term growth over impulsive choices. There are signs of emotional restraint, but also genuine warmth once trust is established. Mentally, the palm indicates careful observation, analytical thinking, and a tendency to process situations deeply before reacting outwardly. The overall balance between emotional and mental markings suggests a composed personality that values clarity, consistency, and emotional control. There are also indications of resilience and adaptability, especially during stressful or uncertain phases of life.",
         heart_line: {
           physical_traits:
             "The heart line appears moderately curved and reasonably clear.",
           insight:
-            "This often suggests emotional sincerity combined with caution in forming deeper emotional trust. You may value stable emotional connections and authenticity over dramatic expression.",
-          strength_score: 74,
+            "This line often suggests someone who values emotional sincerity but does not open up immediately to everyone. You may prefer emotional stability and consistency over highly dramatic or unpredictable relationships. There is likely a tendency to internally process emotions before expressing them outwardly, which can make you appear calm even during emotionally intense moments. At the same time, the balanced structure of the line suggests loyalty and emotional reliability once trust is formed. You may naturally seek depth, authenticity, and emotional security in close relationships rather than surface-level connection.",
+          strength_score: 78,
         },
         head_line: {
           physical_traits:
             "The head line appears fairly deep with a balanced curve.",
           insight:
-            "This may indicate a thinking style that combines analysis with imagination instead of relying entirely on rigid logic. You likely observe situations carefully before making decisions.",
-          strength_score: 82,
+            "This line suggests a thinking style that combines practical analysis with imagination and internal reflection. You are likely someone who carefully evaluates situations before making decisions instead of reacting impulsively. The clarity of the line also points toward focus, mental discipline, and the ability to remain composed under pressure. At times, you may spend significant time mentally processing possibilities before acting, especially in important situations. The overall structure suggests someone who values thoughtful planning, intellectual growth, and understanding the deeper meaning behind experiences.",
+          strength_score: 84,
         },
         life_line: {
           physical_traits:
             "The life line appears stable with moderate continuity.",
           insight:
-            "This often reflects emotional resilience, grounded energy, and the ability to gradually recover from stressful periods rather than reacting impulsively.",
-          strength_score: 78,
+            "This line often reflects emotional resilience, grounded energy, and the ability to gradually recover from stressful experiences. Rather than reacting dramatically to challenges, you may naturally prefer stability, patience, and steady progress. The continuity of the line also suggests adaptability and a practical approach toward managing responsibilities and long-term goals. There may be a strong desire to create security and consistency in both personal and professional life. Overall, the line points toward someone who tends to build strength gradually through experience, discipline, and emotional maturity.",
+          strength_score: 81,
         },
         pattern_synthesis: {
           insight:
-            "The combination of balanced emotional and mental markings may suggest someone who appears calm externally while internally processing experiences deeply and thoughtfully."
+            "The combination of balanced emotional and mental markings suggests someone who appears calm externally while internally processing experiences deeply and thoughtfully. There is a noticeable blend of emotional awareness, analytical thinking, and resilience, which may help you navigate situations with composure and careful judgment."
         },
         personality_profile: {
-          emotional_style: "Reflective and emotionally aware",
-          decision_style: "Measured and analytical",
-          social_energy: "Selective but genuine",
-          stress_response: "Internally processing before reacting"
+          emotional_style: "You tend to process emotions internally before expressing them openly, which can make you appear calm and emotionally steady even during intense situations.",
+          decision_style: "You are likely to prefer thoughtful and structured decision-making rather than impulsive reactions, especially when situations carry long-term consequences.",
+          social_energy: "You may be socially selective rather than overly outgoing, preferring meaningful and emotionally genuine interactions over superficial connections.",
+          stress_response: "You likely handle stress by mentally processing situations carefully and gradually adapting instead of reacting immediately or emotionally."
         }
       };
     }
