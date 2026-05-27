@@ -75,7 +75,7 @@ ${question}
 
     try {
       const deepseekCommand = new ConverseCommand({
-        modelId: "deepseek.r1-v1:0",
+        modelId: "deepseek.v3.2",
 
         messages: [
           {
