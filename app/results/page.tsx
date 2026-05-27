@@ -351,7 +351,7 @@ const renderMarkdown = (text: string) => {
 
                 <div className="space-y-3">
 
-                  {report.observations.map(
+                  {report?.observations?.map(
                     (item, index) => (
                       <div
                         key={index}
