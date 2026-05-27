@@ -85,9 +85,23 @@ export default function ResultsPage() {
 
       console.log("REPORT FETCH:", data, error);
 
-      if (data) {
-        setReport(data as Reading);
-      }
+     if (data) {
+  setReport({
+    ...data,
+    heart_line:
+      typeof data.heart_line === "string"
+        ? JSON.parse(data.heart_line)
+        : data.heart_line,
+    head_line:
+      typeof data.head_line === "string"
+        ? JSON.parse(data.head_line)
+        : data.head_line,
+    life_line:
+      typeof data.life_line === "string"
+        ? JSON.parse(data.life_line)
+        : data.life_line,
+  } as Reading);
+}
     };
 
     load();
