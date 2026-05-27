@@ -71,6 +71,11 @@ export default function ProcessingPage() {
         clearInterval(interval);
 
         if (data.success) {
+          sessionStorage.setItem(
+            "palm_analysis",
+            JSON.stringify(data.analysis)
+          );
+
           setTimeout(() => {
             window.location.href = "/results";
           }, 1600);
