@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+
 import { createClient } from "@supabase/supabase-js";
 
 import {
@@ -24,15 +26,34 @@ const supabase = createClient(
 );
 
 type PalmLine = {
+  physical_traits?: string;
   insight?: string;
+  strength_score?: number;
 };
 
 type Reading = {
   id: string;
+
+  observations?: string[];
+
   summary?: string;
+
   heart_line?: PalmLine;
+
   head_line?: PalmLine;
+
   life_line?: PalmLine;
+
+  pattern_synthesis?: {
+    insight?: string;
+  };
+
+  personality_profile?: {
+    emotional_style?: string;
+    decision_style?: string;
+    social_energy?: string;
+    stress_response?: string;
+  };
 };
 
 type Message = {
@@ -65,7 +86,7 @@ export default function ResultsPage() {
         setPreview(stored);
       }
 
-      // LOAD INSTANTLY FROM SESSION STORAGE
+      // SESSION STORAGE FIRST
       const storedAnalysis =
         sessionStorage.getItem("palm_analysis");
 
@@ -75,19 +96,31 @@ export default function ResultsPage() {
 
           setReport({
             id: "session-report",
+
+            observations: parsed.observations,
+
             summary: parsed.summary,
+
             heart_line:
               typeof parsed.heart_line === "string"
                 ? JSON.parse(parsed.heart_line)
                 : parsed.heart_line,
+
             head_line:
               typeof parsed.head_line === "string"
                 ? JSON.parse(parsed.head_line)
                 : parsed.head_line,
+
             life_line:
               typeof parsed.life_line === "string"
                 ? JSON.parse(parsed.life_line)
                 : parsed.life_line,
+
+            pattern_synthesis:
+              parsed.pattern_synthesis,
+
+            personality_profile:
+              parsed.personality_profile,
           });
 
           return;
@@ -100,6 +133,7 @@ export default function ResultsPage() {
       }
 
       // FALLBACK TO SUPABASE
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -108,7 +142,7 @@ export default function ResultsPage() {
 
       setUserEmail(user.email || "");
 
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("palm_readings")
         .select("*")
         .eq("user_id", user.id)
@@ -118,19 +152,20 @@ export default function ResultsPage() {
         .limit(1)
         .maybeSingle();
 
-      console.log("REPORT FETCH:", data, error);
-
       if (data) {
         setReport({
           ...data,
+
           heart_line:
             typeof data.heart_line === "string"
               ? JSON.parse(data.heart_line)
               : data.heart_line,
+
           head_line:
             typeof data.head_line === "string"
               ? JSON.parse(data.head_line)
               : data.head_line,
+
           life_line:
             typeof data.life_line === "string"
               ? JSON.parse(data.life_line)
@@ -162,11 +197,14 @@ export default function ResultsPage() {
     try {
       const response = await fetch("/api/palm-chat", {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           question,
+          report,
         }),
       });
 
@@ -194,6 +232,50 @@ export default function ResultsPage() {
     setLoading(false);
   };
 
+  const renderMarkdown = (text: string) => (
+    <ReactMarkdown
+      components={{
+        p: ({ children }) => (
+          <p className="mb-4 leading-8">
+            {children}
+          </p>
+        ),
+
+        ul: ({ children }) => (
+          <ul className="mb-4 list-disc space-y-2 pl-5">
+            {children}
+          </ul>
+        ),
+
+        ol: ({ children }) => (
+          <ol className="mb-4 list-decimal space-y-2 pl-5">
+            {children}
+          </ol>
+        ),
+
+        strong: ({ children }) => (
+          <strong className="font-semibold text-white">
+            {children}
+          </strong>
+        ),
+
+        h1: ({ children }) => (
+          <h1 className="mb-4 text-xl font-bold">
+            {children}
+          </h1>
+        ),
+
+        h2: ({ children }) => (
+          <h2 className="mb-3 text-lg font-semibold">
+            {children}
+          </h2>
+        ),
+      }}
+    >
+      {text}
+    </ReactMarkdown>
+  );
+
   return (
     <main className="min-h-screen bg-background px-4 py-5 pb-36 md:px-6">
       <div className="mx-auto max-w-7xl space-y-6">
@@ -201,6 +283,7 @@ export default function ResultsPage() {
         {/* TOP BAR */}
 
         <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
 
             <div className="flex items-center gap-3">
@@ -242,6 +325,7 @@ export default function ResultsPage() {
             </div>
 
           </div>
+
         </div>
 
         {/* MAIN GRID */}
@@ -287,6 +371,35 @@ export default function ResultsPage() {
               </div>
             )}
 
+            {/* OBSERVATIONS */}
+
+            {report?.observations?.length > 0 && (
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
+
+                <h2 className="mb-5 text-2xl font-semibold">
+                  Palm Observations
+                </h2>
+
+                <div className="space-y-3">
+
+                  {report.observations.map(
+                    (item, index) => (
+                      <div
+                        key={index}
+                        className="rounded-2xl bg-white/5 p-4 text-sm leading-7"
+                      >
+                        • {item}
+                      </div>
+                    )
+                  )}
+
+                </div>
+
+              </div>
+            )}
+
+            {/* SUMMARY */}
+
             {report?.summary && (
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
 
@@ -301,6 +414,8 @@ export default function ResultsPage() {
               </div>
             )}
 
+            {/* HEART */}
+
             {report?.heart_line?.insight && (
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
 
@@ -310,11 +425,43 @@ export default function ResultsPage() {
                     <Heart className="h-5 w-5" />
                   </div>
 
-                  <h2 className="text-2xl font-semibold">
-                    Heart Line
-                  </h2>
+                  <div>
+                    <h2 className="text-2xl font-semibold">
+                      Heart Line
+                    </h2>
+
+                    {report.heart_line
+                      ?.strength_score && (
+                      <p className="text-sm text-pink-300">
+                        Strength Score:{" "}
+                        {
+                          report.heart_line
+                            .strength_score
+                        }
+                        /100
+                      </p>
+                    )}
+                  </div>
 
                 </div>
+
+                {report.heart_line
+                  ?.physical_traits && (
+                  <div className="mt-5 rounded-2xl bg-white/5 p-4">
+
+                    <p className="mb-2 text-sm text-primary">
+                      Physical Traits
+                    </p>
+
+                    <p className="text-sm leading-7 text-foreground/80">
+                      {
+                        report.heart_line
+                          .physical_traits
+                      }
+                    </p>
+
+                  </div>
+                )}
 
                 <p className="mt-5 text-base leading-8 text-foreground/90">
                   {report.heart_line.insight}
@@ -322,6 +469,8 @@ export default function ResultsPage() {
 
               </div>
             )}
+
+            {/* HEAD */}
 
             {report?.head_line?.insight && (
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
@@ -332,11 +481,43 @@ export default function ResultsPage() {
                     <Brain className="h-5 w-5" />
                   </div>
 
-                  <h2 className="text-2xl font-semibold">
-                    Head Line
-                  </h2>
+                  <div>
+                    <h2 className="text-2xl font-semibold">
+                      Head Line
+                    </h2>
+
+                    {report.head_line
+                      ?.strength_score && (
+                      <p className="text-sm text-cyan-300">
+                        Strength Score:{" "}
+                        {
+                          report.head_line
+                            .strength_score
+                        }
+                        /100
+                      </p>
+                    )}
+                  </div>
 
                 </div>
+
+                {report.head_line
+                  ?.physical_traits && (
+                  <div className="mt-5 rounded-2xl bg-white/5 p-4">
+
+                    <p className="mb-2 text-sm text-primary">
+                      Physical Traits
+                    </p>
+
+                    <p className="text-sm leading-7 text-foreground/80">
+                      {
+                        report.head_line
+                          .physical_traits
+                      }
+                    </p>
+
+                  </div>
+                )}
 
                 <p className="mt-5 text-base leading-8 text-foreground/90">
                   {report.head_line.insight}
@@ -344,6 +525,8 @@ export default function ResultsPage() {
 
               </div>
             )}
+
+            {/* LIFE */}
 
             {report?.life_line?.insight && (
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
@@ -354,15 +537,139 @@ export default function ResultsPage() {
                     <Activity className="h-5 w-5" />
                   </div>
 
-                  <h2 className="text-2xl font-semibold">
-                    Life Line
-                  </h2>
+                  <div>
+                    <h2 className="text-2xl font-semibold">
+                      Life Line
+                    </h2>
+
+                    {report.life_line
+                      ?.strength_score && (
+                      <p className="text-sm text-emerald-300">
+                        Strength Score:{" "}
+                        {
+                          report.life_line
+                            .strength_score
+                        }
+                        /100
+                      </p>
+                    )}
+                  </div>
 
                 </div>
+
+                {report.life_line
+                  ?.physical_traits && (
+                  <div className="mt-5 rounded-2xl bg-white/5 p-4">
+
+                    <p className="mb-2 text-sm text-primary">
+                      Physical Traits
+                    </p>
+
+                    <p className="text-sm leading-7 text-foreground/80">
+                      {
+                        report.life_line
+                          .physical_traits
+                      }
+                    </p>
+
+                  </div>
+                )}
 
                 <p className="mt-5 text-base leading-8 text-foreground/90">
                   {report.life_line.insight}
                 </p>
+
+              </div>
+            )}
+
+            {/* PATTERN SYNTHESIS */}
+
+            {report?.pattern_synthesis
+              ?.insight && (
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
+
+                <h2 className="mb-5 text-2xl font-semibold">
+                  Pattern Synthesis
+                </h2>
+
+                <p className="leading-8 text-foreground/90">
+                  {
+                    report.pattern_synthesis
+                      .insight
+                  }
+                </p>
+
+              </div>
+            )}
+
+            {/* PERSONALITY PROFILE */}
+
+            {report?.personality_profile && (
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
+
+                <h2 className="mb-5 text-2xl font-semibold">
+                  Personality Profile
+                </h2>
+
+                <div className="grid gap-4 md:grid-cols-2">
+
+                  <div className="rounded-2xl bg-white/5 p-4">
+                    <p className="mb-2 text-sm text-primary">
+                      Emotional Style
+                    </p>
+
+                    <p className="text-sm leading-7">
+                      {
+                        report
+                          .personality_profile
+                          .emotional_style
+                      }
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-white/5 p-4">
+                    <p className="mb-2 text-sm text-primary">
+                      Decision Style
+                    </p>
+
+                    <p className="text-sm leading-7">
+                      {
+                        report
+                          .personality_profile
+                          .decision_style
+                      }
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-white/5 p-4">
+                    <p className="mb-2 text-sm text-primary">
+                      Social Energy
+                    </p>
+
+                    <p className="text-sm leading-7">
+                      {
+                        report
+                          .personality_profile
+                          .social_energy
+                      }
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-white/5 p-4">
+                    <p className="mb-2 text-sm text-primary">
+                      Stress Response
+                    </p>
+
+                    <p className="text-sm leading-7">
+                      {
+                        report
+                          .personality_profile
+                          .stress_response
+                      }
+                    </p>
+                  </div>
+
+                </div>
 
               </div>
             )}
@@ -409,13 +716,13 @@ export default function ResultsPage() {
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`rounded-2xl p-4 text-sm leading-7 ${
+                className={`rounded-2xl p-5 text-[15px] leading-8 ${
                   message.role === "user"
                     ? "bg-primary text-primary-foreground"
                     : "bg-white/5"
                 }`}
               >
-                {message.text}
+                {renderMarkdown(message.text)}
               </div>
             ))}
 
@@ -487,8 +794,10 @@ export default function ResultsPage() {
             </div>
 
           </div>
+
         </>
       )}
+
     </main>
   );
 }
