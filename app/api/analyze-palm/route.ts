@@ -56,35 +56,36 @@ export async function POST(request: NextRequest) {
 
     const imageBytes = Buffer.from(base64Data, "base64");
 
-    const prompt = `You are an emotionally intelligent AI palm reader.
+    const prompt = `
+You are an expert AI palm reader.
 
-Analyze ONLY the visible palm.
+Analyze the uploaded palm image carefully.
 
 Return STRICT JSON ONLY.
 
 Required format:
 {
+  "summary": "4-6 sentence personality overview",
   "heart_line": {
-    "path": "SVG_PATH",
-    "insight": "string"
+    "insight": "Detailed emotional insight in 3-4 sentences"
   },
   "head_line": {
-    "path": "SVG_PATH",
-    "insight": "string"
+    "insight": "Detailed intelligence/personality insight in 3-4 sentences"
   },
   "life_line": {
-    "path": "SVG_PATH",
-    "insight": "string"
-  },
-  "summary": "string"
+    "insight": "Detailed life energy and stability insight in 3-4 sentences"
+  }
 }
 
 Rules:
-- concise responses
-- conversational tone
-- no philosophy
-- no dangerous predictions
-- no fake certainty`;
+- no markdown
+- no code blocks
+- no extra text
+- no philosophical filler
+- sound personal and emotionally intelligent
+- avoid repetition
+- each section must feel unique
+`;
 
     const command = new ConverseCommand({
       modelId: "amazon.nova-lite-v1:0",
@@ -107,8 +108,8 @@ Rules:
         },
       ],
       inferenceConfig: {
-        maxTokens: 1000,
-        temperature: 0.6,
+        maxTokens: 1400,
+        temperature: 0.7,
         topP: 0.9,
       },
     });
@@ -122,43 +123,49 @@ Rules:
 
     try {
       const cleanedText = text
-  .replace(/```json/g, "")
-  .replace(/```/g, "")
-  .trim();
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
 
-parsed = JSON.parse(cleanedText);
-    } catch {
+      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+
+      if (!jsonMatch) {
+        throw new Error("No JSON returned");
+      }
+
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch (error) {
+      console.error("PARSE ERROR:", error);
+      console.error("RAW MODEL RESPONSE:", text);
+
       parsed = {
+        summary:
+          "Your palm reflects a thoughtful and emotionally balanced personality. You appear to approach life with calm observation and emotional awareness. There is a strong indication of practicality mixed with emotional openness. Your decisions are likely guided by both logic and empathy. The overall palm structure suggests resilience and adaptability during periods of change.",
         heart_line: {
-          path: "M55 130 C120 90 190 105 255 95",
           insight:
-            "You care deeply but take time before fully trusting people.",
+            "Your emotional nature appears warm and sincere. You likely value deep trust and meaningful emotional connections rather than surface-level interactions. The palm suggests emotional stability with a caring attitude toward the people close to you. There is also an indication that you prefer honesty and emotional clarity in relationships.",
         },
         head_line: {
-          path: "M60 185 C130 170 205 165 275 175",
           insight:
-            "You tend to think carefully before making decisions.",
+            "The palm suggests a practical and analytical style of thinking. You may naturally observe situations carefully before reacting and tend to process things rationally. There is also an indication of curiosity and mental adaptability, allowing you to balance creativity with logic. Your thinking style seems calm, steady, and thoughtful.",
         },
         life_line: {
-          path: "M115 80 C55 170 85 270 160 360",
           insight:
-            "You adapt well during emotionally intense phases of life.",
+            "Your life line reflects grounded energy and emotional resilience. The palm suggests that you adapt steadily through changing situations and recover well from stressful periods. There is an indication of stable inner strength and a preference for long-term consistency over impulsive decisions. Overall, the energy appears balanced and composed.",
         },
-        summary:
-          "Your palm reflects emotional depth, balanced thinking, and resilient energy.",
       };
     }
 
     if (userId) {
- const insertResult = await supabase
-  .from("palm_readings")
-  .insert({
-    user_id: userId,
-    summary: parsed.summary,
-    heart_line: parsed.heart_line,
-    head_line: parsed.head_line,
-    life_line: parsed.life_line,
-  });
+      await supabase
+        .from("palm_readings")
+        .insert({
+          user_id: userId,
+          summary: parsed.summary,
+          heart_line: parsed.heart_line,
+          head_line: parsed.head_line,
+          life_line: parsed.life_line,
+        });
     }
 
     return NextResponse.json({
