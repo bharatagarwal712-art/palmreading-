@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -232,49 +231,19 @@ export default function ResultsPage() {
     setLoading(false);
   };
 
-  const renderMarkdown = (text: string) => (
-    <ReactMarkdown
-      components={{
-        p: ({ children }) => (
-          <p className="mb-4 leading-8">
-            {children}
-          </p>
-        ),
-
-        ul: ({ children }) => (
-          <ul className="mb-4 list-disc space-y-2 pl-5">
-            {children}
-          </ul>
-        ),
-
-        ol: ({ children }) => (
-          <ol className="mb-4 list-decimal space-y-2 pl-5">
-            {children}
-          </ol>
-        ),
-
-        strong: ({ children }) => (
-          <strong className="font-semibold text-white">
-            {children}
-          </strong>
-        ),
-
-        h1: ({ children }) => (
-          <h1 className="mb-4 text-xl font-bold">
-            {children}
-          </h1>
-        ),
-
-        h2: ({ children }) => (
-          <h2 className="mb-3 text-lg font-semibold">
-            {children}
-          </h2>
-        ),
-      }}
-    >
-      {text}
-    </ReactMarkdown>
-  );
+const renderMarkdown = (text: string) => {
+  return text
+    .split("\n")
+    .filter(Boolean)
+    .map((line, index) => (
+      <p
+        key={index}
+        className="mb-4 leading-8"
+      >
+        {line}
+      </p>
+    ));
+};
 
   return (
     <main className="min-h-screen bg-background px-4 py-5 pb-36 md:px-6">
