@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     const base64Data = imageUrl.replace(
-      /^data:image\/\w+;base64,/, 
+      /^data:image\/\w+;base64,/,
       ""
     );
 
@@ -47,44 +47,86 @@ export async function POST(request: NextRequest) {
 
     const mimeType = mimeMatch?.[1] || "image/jpeg";
 
-    const format =
-      mimeType.includes("png")
-        ? "png"
-        : mimeType.includes("webp")
-          ? "webp"
-          : "jpeg";
+    const format = mimeType.includes("png")
+      ? "png"
+      : mimeType.includes("webp")
+        ? "webp"
+        : "jpeg";
 
     const imageBytes = Buffer.from(base64Data, "base64");
 
     const prompt = `
-You are an expert AI palm reader.
+You are an expert palm analyst and psychologically insightful palm reader.
 
-Analyze the uploaded palm image carefully.
+Carefully analyze ONLY visible features from the uploaded palm image.
+
+FIRST:
+Observe physical palm characteristics.
+
+Look for:
+- heart line shape and depth
+- head line shape and clarity
+- life line curvature and continuity
+- fate line visibility
+- sun line visibility
+- line sharpness
+- forks or breaks
+- palm width and shape
+- finger proportions
+- finger spacing
+- thumb flexibility
+- mounts prominence
+- texture and fine lines
+- emotional vs logical dominance
+- unusual markings or asymmetry
+
+SECOND:
+Infer personality tendencies and emotional patterns BASED on those observations.
+
+IMPORTANT:
+- make the reading feel highly personal
+- explain WHY you inferred something
+- reference visible features frequently
+- avoid generic horoscope language
+- avoid mystical wording
+- avoid fake future predictions
+- focus on tendencies, psychology, emotional style, motivation, resilience, communication, and decision-making
+- sound emotionally intelligent and observational
+- avoid repetition
 
 Return STRICT JSON ONLY.
 
-Required format:
+Required JSON format:
 {
-  "summary": "4-6 sentence personality overview",
+  "observations": [
+    "Visible palm observations"
+  ],
+  "summary": "Detailed psychological summary",
   "heart_line": {
-    "insight": "Detailed emotional insight in 3-4 sentences"
+    "physical_traits": "Visible physical characteristics",
+    "insight": "Emotional interpretation",
+    "strength_score": 0
   },
   "head_line": {
-    "insight": "Detailed intelligence/personality insight in 3-4 sentences"
+    "physical_traits": "Visible physical characteristics",
+    "insight": "Mental/personality interpretation",
+    "strength_score": 0
   },
   "life_line": {
-    "insight": "Detailed life energy and stability insight in 3-4 sentences"
+    "physical_traits": "Visible physical characteristics",
+    "insight": "Grounding/vitality interpretation",
+    "strength_score": 0
+  },
+  "pattern_synthesis": {
+    "insight": "Combined interpretation from multiple palm features"
+  },
+  "personality_profile": {
+    "emotional_style": "",
+    "decision_style": "",
+    "social_energy": "",
+    "stress_response": ""
   }
 }
-
-Rules:
-- no markdown
-- no code blocks
-- no extra text
-- no philosophical filler
-- sound personal and emotionally intelligent
-- avoid repetition
-- each section must feel unique
 `;
 
     const command = new ConverseCommand({
@@ -108,8 +150,8 @@ Rules:
         },
       ],
       inferenceConfig: {
-        maxTokens: 1400,
-        temperature: 0.7,
+        maxTokens: 1800,
+        temperature: 0.65,
         topP: 0.9,
       },
     });
@@ -139,20 +181,44 @@ Rules:
       console.error("RAW MODEL RESPONSE:", text);
 
       parsed = {
+        observations: [
+          "The major palm lines appear moderately defined with balanced spacing.",
+          "The palm structure suggests a blend of emotional sensitivity and analytical thinking.",
+          "Fine secondary lines indicate reflective thinking and emotional depth."
+        ],
         summary:
-          "Your palm reflects a thoughtful and emotionally balanced personality. You appear to approach life with calm observation and emotional awareness. There is a strong indication of practicality mixed with emotional openness. Your decisions are likely guided by both logic and empathy. The overall palm structure suggests resilience and adaptability during periods of change.",
+          "Your palm suggests someone who tends to balance emotional awareness with practical thinking rather than operating from extremes. The visible line structure points toward internal reflection, emotional depth, and a preference for meaningful stability over impulsive behavior. There are also indications of adaptability and gradual personal growth through experience.",
         heart_line: {
+          physical_traits:
+            "The heart line appears moderately curved and reasonably clear.",
           insight:
-            "Your emotional nature appears warm and sincere. You likely value deep trust and meaningful emotional connections rather than surface-level interactions. The palm suggests emotional stability with a caring attitude toward the people close to you. There is also an indication that you prefer honesty and emotional clarity in relationships.",
+            "This often suggests emotional sincerity combined with caution in forming deeper emotional trust. You may value stable emotional connections and authenticity over dramatic expression.",
+          strength_score: 74,
         },
         head_line: {
+          physical_traits:
+            "The head line appears fairly deep with a balanced curve.",
           insight:
-            "The palm suggests a practical and analytical style of thinking. You may naturally observe situations carefully before reacting and tend to process things rationally. There is also an indication of curiosity and mental adaptability, allowing you to balance creativity with logic. Your thinking style seems calm, steady, and thoughtful.",
+            "This may indicate a thinking style that combines analysis with imagination instead of relying entirely on rigid logic. You likely observe situations carefully before making decisions.",
+          strength_score: 82,
         },
         life_line: {
+          physical_traits:
+            "The life line appears stable with moderate continuity.",
           insight:
-            "Your life line reflects grounded energy and emotional resilience. The palm suggests that you adapt steadily through changing situations and recover well from stressful periods. There is an indication of stable inner strength and a preference for long-term consistency over impulsive decisions. Overall, the energy appears balanced and composed.",
+            "This often reflects emotional resilience, grounded energy, and the ability to gradually recover from stressful periods rather than reacting impulsively.",
+          strength_score: 78,
         },
+        pattern_synthesis: {
+          insight:
+            "The combination of balanced emotional and mental markings may suggest someone who appears calm externally while internally processing experiences deeply and thoughtfully."
+        },
+        personality_profile: {
+          emotional_style: "Reflective and emotionally aware",
+          decision_style: "Measured and analytical",
+          social_energy: "Selective but genuine",
+          stress_response: "Internally processing before reacting"
+        }
       };
     }
 
