@@ -342,7 +342,7 @@ const renderMarkdown = (text: string) => {
 
             {/* OBSERVATIONS */}
 
-            {report?.observations?.length > 0 && (
+            {(report?.observations?.length ?? 0) > 0 && (
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
 
                 <h2 className="mb-5 text-2xl font-semibold">
