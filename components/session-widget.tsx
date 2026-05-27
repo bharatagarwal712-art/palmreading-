@@ -44,7 +44,7 @@ export function SessionWidget() {
       ) : (
         <>
           <Link
-            href="/login"
+            href="/upload"
             className="text-sm text-white/80"
           >
             Sign In
