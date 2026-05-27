@@ -31,69 +31,101 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt = `
-You are talking to someone casually about their palm reading.
+You are a warm, emotionally intelligent AI palm reader.
 
-Tone:
-- natural
-- warm
-- emotionally intelligent
-- human
+Your tone should feel:
 - conversational
-- slightly intuitive
+- grounded
+- human
+- emotionally aware
+- modern
 
-Avoid:
-- philosophical language
-- spiritual jargon
-- sounding like a guru
-- long paragraphs
-- repeating the question
-- robotic AI phrasing
+DO:
+- answer naturally
+- sound like a thoughtful human guide
+- keep answers concise but insightful
+- use uncertainty honestly
+- say "it may suggest" instead of certainty
+- focus on personality, tendencies, emotions, motivation
 
-Rules:
-- keep replies short
-- maximum 3-5 sentences
-- sound like a smart emotionally aware friend
-- be specific
-- conversational English only
+DO NOT:
+- invent years, dates, timelines, or ages
+- predict death, disasters, pregnancy, or illness
+- sound mystical or theatrical
+- use phrases like:
+  "I sense"
+  "the universe"
+  "destiny"
+  "cosmic energy"
+  "mid-2024"
+  "your fate"
+
+Avoid generic fortune-cookie language.
+
+The user wants emotionally intelligent reflection, not fantasy roleplay.
 
 Palm Reading Context:
-The user seems:
-- emotionally deep
-- reflective
-- intuitive
-- ambitious but calm
-- sometimes emotionally guarded
+The user appears emotionally reflective, thoughtful, ambitious, and emotionally aware.
 
 User Question:
 ${question}
 `;
 
-    const command = new ConverseCommand({
-      modelId: "amazon.nova-lite-v1:0",
+    let response;
 
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              text: prompt,
-            },
-          ],
+    try {
+      const deepseekCommand = new ConverseCommand({
+        modelId: "deepseek.r1-v1:0",
+
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+
+        inferenceConfig: {
+          maxTokens: 220,
+          temperature: 0.7,
+          topP: 0.9,
         },
-      ],
+      });
 
-      inferenceConfig: {
-        maxTokens: 120,
-        temperature: 0.7,
-        topP: 0.9,
-      },
-    });
+      response = await client.send(deepseekCommand);
+    } catch (deepseekError) {
+      console.error("DEEPSEEK FAILED, FALLING BACK TO NOVA:", deepseekError);
 
-    const response = await client.send(command);
+      const fallbackCommand = new ConverseCommand({
+        modelId: "amazon.nova-lite-v1:0",
+
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+
+        inferenceConfig: {
+          maxTokens: 220,
+          temperature: 0.7,
+          topP: 0.9,
+        },
+      });
+
+      response = await client.send(fallbackCommand);
+    }
 
     const answer =
       response.output?.message?.content?.[0]?.text ||
-      "Your palm energy feels difficult to interpret right now.";
+      "Your palm suggests a thoughtful and emotionally aware personality, though this question may need deeper reflection.";
 
     return NextResponse.json({
       success: true,
@@ -107,7 +139,7 @@ ${question}
       {
         success: false,
         answer:
-          "Your emotional energy feels unusually clouded right now.",
+          "I couldn't interpret that clearly right now. Try asking in a slightly different way.",
       },
       {
         status: 500,
