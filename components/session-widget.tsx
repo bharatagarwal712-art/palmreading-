@@ -1,63 +1,103 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+process.env.NEXT_PUBLIC_SUPABASE_URL!,
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
 export function SessionWidget() {
-  const [email, setEmail] = useState<string | null>(null);
+const [email, setEmail] = useState<string | null>(null);
+const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    const load = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+useEffect(() => {
+const load = async () => {
+const {
+data: { user },
+} = await supabase.auth.getUser();
 
-      if (user?.email) {
-        setEmail(user.email);
-      }
-    };
+  if (user?.email) {
+    setEmail(user.email);
+  }
+};
 
-    load();
-  }, []);
+load();
 
-  return (
-    <div className="fixed right-5 top-5 z-[200] flex items-center gap-3 rounded-full border border-white/10 bg-black/60 px-4 py-3 backdrop-blur-xl">
-      {email ? (
-        <>
-          <div className="hidden text-sm text-white/80 md:block">
-            {email}
-          </div>
+}, []);
 
-          <Link
-            href="/results"
-            className="rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground"
-          >
-            My Reading
-          </Link>
-        </>
-      ) : (
-        <>
-          <Link
-            href="/results"
-            className="text-sm text-white/80"
-          >
-            Sign In
-          </Link>
+const handleSignIn = async () => {
+await supabase.auth.signInWithOAuth({
+provider: "google",
+options: {
+redirectTo: ${window.location.origin}/,
+},
+});
+};
 
-          <Link
-            href="/results"
-            className="rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground"
-          >
-            Upload Palm
-          </Link>
-        </>
-      )}
-    </div>
+const handleUploadPalm = () => {
+fileInputRef.current?.click();
+};
+
+const handleFileSelected = async (
+event: React.ChangeEvent
+) => {
+const file = event.target.files?.[0];
+
+if (!file) return;
+
+const reader = new FileReader();
+
+reader.onloadend = () => {
+  localStorage.setItem(
+    "palm_upload_preview",
+    reader.result as string
   );
-}
+
+  window.location.href = "/processing";
+};
+
+reader.readAsDataURL(file);
+
+};
+
+return (
+
+
+
+
+  {email ? (
+    <>
+      <div className="hidden text-sm text-white/80 md:block">
+        {email}
+      </div>
+
+      <Link
+        href="/results"
+        className="rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground"
+      >
+        My Reading
+      </Link>
+    </>
+  ) : (
+    <>
+      <button
+        onClick={handleSignIn}
+        className="text-sm text-white/80"
+      >
+        Sign In
+      </button>
+
+      <button
+        onClick={handleUploadPalm}
+        className="rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground"
+      >
+        Upload Palm
+      </button>
+    </>
+  )}
+</div>
+
+);
