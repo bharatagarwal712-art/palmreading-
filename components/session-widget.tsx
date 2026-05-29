@@ -1,51 +1,18 @@
 "use client";
-
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-process.env.NEXT_PUBLIC_SUPABASE_URL!,
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-export function SessionWidget() {
-const [email, setEmail] = useState<string | null>(null);
-const fileInputRef = useRef(null);
-
-useEffect(() => {
-const load = async () => {
-const {
-data: { user },
-} = await supabase.auth.getUser();
-
+import Link from "next/link"; import { useEffect, useRef, useState } from "react"; import { createClient } from "@supabase/supabase-js";
+const supabase = createClient( process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! );
+export function SessionWidget() { const [email, setEmail] = useState<string | null>(null); const fileInputRef = useRef<HTMLInputElement | null>(null);
+useEffect(() => { const load = async () => { const { data: { user }, } = await supabase.auth.getUser();
   if (user?.email) {
     setEmail(user.email);
   }
 };
 
 load();
-
 }, []);
-
-const handleSignIn = async () => {
-await supabase.auth.signInWithOAuth({
-provider: "google",
-options: {
-redirectTo: `${window.location.origin}/`,
-},
-});
-};
-
-const handleUploadPalm = () => {
-fileInputRef.current?.click();
-};
-
-const handleFileSelected = async (
-event: React.ChangeEvent
-) => {
-const file = event.target.files?.[0];
-
+const handleSignIn = async () => { await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: ${window.location.origin}/, }, }); };
+const handleUploadPalm = () => { fileInputRef.current?.click(); };
+const handleFileSelected = async ( event: React.ChangeEvent ) => { const file = event.target.files?.[0];
 if (!file) return;
 
 const reader = new FileReader();
@@ -60,14 +27,8 @@ reader.onloadend = () => {
 };
 
 reader.readAsDataURL(file);
-
 };
-
-return (
-
-
-
-
+return ( 
   {email ? (
     <>
       <div className="hidden text-sm text-white/80 md:block">
@@ -99,5 +60,4 @@ return (
     </>
   )}
 </div>
-
-);
+); }
