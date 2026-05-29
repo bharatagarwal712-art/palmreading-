@@ -34,10 +34,8 @@ export function UploadPalmButton({
 
     try {
       setUploading(true);
-
       await savePalmUpload(file);
-
-      window.location.href = "/processing";
+      window.location.href = "/results";
     } catch (error) {
       console.error(error);
     } finally {
