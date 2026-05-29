@@ -44,14 +44,14 @@ export function SessionWidget() {
       ) : (
         <>
           <Link
-            href="/upload"
+            href="/results"
             className="text-sm text-white/80"
           >
             Sign In
           </Link>
 
           <Link
-            href="/upload"
+            href="/results"
             className="rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground"
           >
             Upload Palm
